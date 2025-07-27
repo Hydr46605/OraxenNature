@@ -1,0 +1,22 @@
+trees:
+  example_advanced_tree:
+    enabled: false # Set to true to enable this tree populator
+    log_oraxen_id: "my_custom_log"
+    leaf_oraxen_id: "my_custom_leaves"
+    min_y: 60
+    max_y: 100
+    chance: 0.01
+    worlds:
+      - world
+    biomes:
+      - PLAINS
+      - FOREST
+    # New advanced parameters
+    trunk_height: 5 # Base height of the trunk
+    branch_length_min: 2 # Minimum length of a branch segment
+    branch_length_max: 4 # Maximum length of a branch segment
+    branch_angle_variation: 30 # Max angle deviation for branches (degrees)
+    max_branches: 5 # Max number of branches from a single point
+    leaf_radius: 2 # Radius of the leaf canopy around branches
+    leaf_density: 0.8 # Probability of placing a leaf block (0.0-1.0)
+    tree_type: "BRANCHING" # Could be "SIMPLE", "BRANCHING", "L_SYSTEM" etc.

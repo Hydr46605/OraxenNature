@@ -1,0 +1,10 @@
+it/hydr4/oraxennature/growth/GrowableBlock.class
+it/hydr4/oraxennature/commands/OraxenNatureCommand.class
+it/hydr4/oraxennature/populators/treePopulator/CustomTreePopulator.class
+it/hydr4/oraxennature/OraxenNature.class
+it/hydr4/oraxennature/growth/GrowableBlock$GrowthConditions.class
+it/hydr4/oraxennature/growth/GrowthTask.class
+it/hydr4/oraxennature/populators/treePopulator/CustomTree.class
+it/hydr4/oraxennature/listeners/ChunkLoadListener.class
+it/hydr4/oraxennature/growth/GrowthManager.class
+it/hydr4/oraxennature/populators/CustomBlockPopulator.class
