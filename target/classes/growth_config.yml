@@ -1,0 +1,27 @@
+growable_blocks:
+  my_custom_crop:
+    initial_oraxen_id: "my_crop_stage_0"
+    growth_stages:
+      - "my_crop_stage_1"
+      - "my_crop_stage_2"
+      - "my_crop_stage_3" # Final stage
+    growth_interval_seconds: 60 # Attempts to grow every 60 seconds
+    growth_conditions:
+      light_level_min: 9
+      light_level_max: 15
+      # Add more conditions later (e.g., block_below, biomes, worlds)
+    decay_conditions:
+      light_level_min: 0
+      light_level_max: 7
+      # Add more decay conditions
+  my_glowing_crystal:
+    initial_oraxen_id: "glowing_crystal_dim"
+    growth_stages:
+      - "glowing_crystal_bright"
+    growth_interval_seconds: 300
+    growth_conditions:
+      light_level_min: 0
+      light_level_max: 7 # Grows in darkness
+    decay_conditions:
+      light_level_min: 8
+      light_level_max: 15 # Decays in light
