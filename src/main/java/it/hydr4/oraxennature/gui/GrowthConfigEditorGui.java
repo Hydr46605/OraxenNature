@@ -25,7 +25,8 @@ public class GrowthConfigEditorGui extends PaginatedGui {
         if (config.isConfigurationSection("growth_configs")) {
             Set<String> configKeys = config.getConfigurationSection("growth_configs").getKeys(false);
             for (String key : configKeys) {
-                ItemStack item = new ItemStack(Material.BONE_MEAL);
+                // TODO: Replace with an Oraxen block icon for better visual representation
+                ItemStack item = new ItemStack(Material.STONE);
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName("§b" + key);

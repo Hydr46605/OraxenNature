@@ -25,7 +25,7 @@ public class GrowthConfigDetailGui extends AbstractGui {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         File growthConfigFile = new File(plugin.getDataFolder(), "growth_config.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(growthConfigFile);
 

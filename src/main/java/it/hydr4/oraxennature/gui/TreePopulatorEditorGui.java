@@ -25,7 +25,8 @@ public class TreePopulatorEditorGui extends PaginatedGui {
         if (config.isConfigurationSection("trees")) {
             Set<String> treeKeys = config.getConfigurationSection("trees").getKeys(false);
             for (String key : treeKeys) {
-                ItemStack item = new ItemStack(Material.OAK_SAPLING);
+                // TODO: Replace with an Oraxen block icon for better visual representation
+                ItemStack item = new ItemStack(Material.STONE);
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName("§b" + key);

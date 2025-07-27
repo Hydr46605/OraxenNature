@@ -22,6 +22,8 @@ public abstract class PaginatedGui extends AbstractGui {
         this.currentPage = 0;
         this.itemsPerPage = itemsPerPage;
         this.allItems = new ArrayList<>();
+        loadAllItems();
+        updatePage();
     }
 
     protected abstract void loadAllItems();
@@ -90,7 +92,7 @@ public abstract class PaginatedGui extends AbstractGui {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         loadAllItems();
         updatePage();
         setupPaginationButtons();

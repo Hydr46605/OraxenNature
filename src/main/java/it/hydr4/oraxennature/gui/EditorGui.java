@@ -17,7 +17,7 @@ public class EditorGui extends AbstractGui {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         // Block Populator Button
         ItemStack blockPopulatorItem = new ItemStack(Material.GRASS_BLOCK);
         ItemMeta blockPopulatorMeta = blockPopulatorItem.getItemMeta();

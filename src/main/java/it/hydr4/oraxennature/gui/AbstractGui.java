@@ -54,5 +54,5 @@ public abstract class AbstractGui implements Gui {
         player.closeInventory();
     }
 
-    protected abstract void setupItems();
+    public abstract void setupItems();
 }

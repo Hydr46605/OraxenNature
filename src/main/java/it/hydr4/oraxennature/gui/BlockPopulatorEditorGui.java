@@ -26,7 +26,8 @@ public class BlockPopulatorEditorGui extends PaginatedGui {
         if (config.isConfigurationSection("blocks")) {
             Set<String> blockKeys = config.getConfigurationSection("blocks").getKeys(false);
             for (String key : blockKeys) {
-                ItemStack item = new ItemStack(Material.PAPER);
+                // TODO: Replace with an Oraxen block icon for better visual representation
+                ItemStack item = new ItemStack(Material.STONE);
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName("§b" + key);

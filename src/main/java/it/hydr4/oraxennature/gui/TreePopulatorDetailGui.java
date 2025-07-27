@@ -25,7 +25,7 @@ public class TreePopulatorDetailGui extends AbstractGui {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         File treePopulatorFile = new File(plugin.getDataFolder(), "tree_populator.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(treePopulatorFile);
 

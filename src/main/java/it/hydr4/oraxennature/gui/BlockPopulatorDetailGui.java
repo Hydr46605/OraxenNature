@@ -26,7 +26,7 @@ public class BlockPopulatorDetailGui extends AbstractGui {
     }
 
     @Override
-    protected void setupItems() {
+    public void setupItems() {
         File blockPopulatorFile = new File(plugin.getDataFolder(), "block_populator.yml");
         YamlConfiguration config = YamlConfiguration.loadConfiguration(blockPopulatorFile);
 

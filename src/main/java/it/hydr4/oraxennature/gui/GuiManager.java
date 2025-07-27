@@ -24,6 +24,7 @@ public class GuiManager implements Listener {
 
     public void openGui(Player player, Gui gui) {
         gui.open(player);
+        gui.setupItems(); // Explicitly call setupItems after opening the GUI
         openGuis.put(player.getUniqueId(), gui);
     }
 

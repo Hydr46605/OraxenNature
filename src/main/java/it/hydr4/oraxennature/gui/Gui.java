@@ -17,4 +17,6 @@ public interface Gui {
 
     void close(Player player);
 
+    void setupItems();
+
 }
