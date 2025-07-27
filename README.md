@@ -1,11 +1,12 @@
-<h1 align="center">OraxenNature</h1>
+<h1 align="center">🌱 OraxenNature</h1>
 <p align="center">A powerful Spigot plugin for enhancing natural world generation with Oraxen custom blocks and trees.</p>
 
 ---
 
 ## Links
 
-- [GitHub Repository](https://github.com/Hydr46605/OraxenNature)
+- [ModRinth](https://modrinth.com/plugin/oraxennature)
+- [Oraxen](https://polymart.org/product/629/oraxen)
 
 ## Features
 
@@ -33,11 +34,11 @@
 
 ## Installation
 
-1.  Download the latest `OraxenNature.jar` from the [GitHub Releases](https://github.com/Hydr46605/OraxenNature/releases).
+1.  Download the latest `OraxenNature.jar` from the [GitHub Releases](https://github.com/Hydr46605/OraxenNature/releases) or from [Modrinth](https://modrinth.com/plugin/oraxennature).
 2.  Place the `OraxenNature.jar` file into your server's `plugins` folder.
 3.  Restart your server.
 4.  (Optional) Edit the generated configuration files in the `plugins/OraxenNature` folder.
 
 ## Support
 
-If you encounter any issues or have suggestions, please open an issue on the [GitHub Repository](https://github.com/Hydr46605/OraxenNature).
+If you encounter any issues or have suggestions, please open an issue.
