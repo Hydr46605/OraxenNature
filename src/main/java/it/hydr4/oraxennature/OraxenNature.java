@@ -4,6 +4,8 @@ import it.hydr4.oraxennature.commands.OraxenNatureCommand;
 import it.hydr4.oraxennature.growth.GrowthManager;
 import it.hydr4.oraxennature.populators.CustomBlockPopulator;
 import it.hydr4.oraxennature.populators.treePopulator.CustomTreePopulator;
+import it.hydr4.oraxennature.gui.GuiManager;
+import it.hydr4.oraxennature.gui.ChatInputListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,6 +19,8 @@ public final class OraxenNature extends JavaPlugin {
     private GrowthManager growthManager;
     private CustomBlockPopulator blockPopulator;
     private CustomTreePopulator treePopulator;
+    private GuiManager guiManager;
+    private ChatInputListener chatInputListener;
     private boolean debugMode = false;
 
     private FileConfiguration blockPopulatorConfig;
@@ -57,6 +61,10 @@ public final class OraxenNature extends JavaPlugin {
         treePopulator = new CustomTreePopulator(this, treePopulatorConfig);
         growthManager = new GrowthManager(this, growthConfig);
         growthManager.startGrowthTask();
+
+        // Initialize GUI Manager
+        guiManager = new GuiManager(this);
+        chatInputListener = new ChatInputListener(this);
 
         // Register commands
         if (getCommand("oraxennature") != null) {
@@ -171,5 +179,9 @@ public final class OraxenNature extends JavaPlugin {
 
     public CustomTreePopulator getTreePopulator() {
         return treePopulator;
+    }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
     }
 }

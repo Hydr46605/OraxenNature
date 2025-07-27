@@ -4,6 +4,7 @@ import it.hydr4.oraxennature.OraxenNature;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import it.hydr4.oraxennature.gui.EditorGui;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -49,6 +50,9 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
                 break;
             case "debug":
                 handleDebugCommand(sender, args);
+                break;
+            case "editor":
+                handleEditorCommand(sender);
                 break;
             case "help":
                 sendHelpMessage(sender);
@@ -185,6 +189,15 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
         plugin.setDebugMode(enableDebug);
         sender.sendMessage("§aDebug mode set to: " + enableDebug);
         plugin.getLogger().info("Debug mode set to: " + enableDebug + " by " + sender.getName());
+    }
+
+    private void handleEditorCommand(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("§cThis command can only be used by a player.");
+            return;
+        }
+        Player player = (Player) sender;
+        plugin.getGuiManager().openGui(player, new EditorGui(plugin));
     }
 
     private void sendHelpMessage(CommandSender sender) {
