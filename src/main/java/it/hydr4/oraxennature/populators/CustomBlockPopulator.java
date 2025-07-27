@@ -8,11 +8,14 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -20,23 +23,37 @@ import java.util.stream.Collectors;
 
 public class CustomBlockPopulator {
 
-    private final JavaPlugin plugin;
+    private final OraxenNature plugin;
     private final FileConfiguration config;
     private final Random random;
+    private final List<String> loadedBlockNames = new ArrayList<>();
 
-    public CustomBlockPopulator(JavaPlugin plugin, FileConfiguration config) {
+    public CustomBlockPopulator(OraxenNature plugin, FileConfiguration config) {
         this.plugin = plugin;
         this.config = config;
         if (!this.config.isConfigurationSection("blocks")) {
-            plugin.getLogger().severe("block_populator.yml is missing the 'blocks' section or is malformed. Block population may not work as expected.");
+            Logger.error("block_populator.yml is missing the 'blocks' section or is malformed. Block population may not work as expected.");
         }
         this.random = new Random();
+        loadBlockNames();
+    }
+
+    private void loadBlockNames() {
+        if (config.isConfigurationSection("blocks")) {
+            for (String key : config.getConfigurationSection("blocks").getKeys(false)) {
+                loadedBlockNames.add(key);
+            }
+        }
+    }
+
+    public List<String> getLoadedBlockNames() {
+        return loadedBlockNames;
     }
 
     public void populate(Chunk chunk) {
         // Check if Oraxen is enabled and loaded
         if (plugin.getServer().getPluginManager().getPlugin("Oraxen") == null || !plugin.getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
-            plugin.getLogger().warning("Oraxen is not enabled. Skipping block population in world " + chunk.getWorld().getName() + ".");
+            Logger.warning("Oraxen is not enabled. Skipping block population in world " + chunk.getWorld().getName() + ".");
             return;
         }
 
@@ -44,13 +61,13 @@ public class CustomBlockPopulator {
             for (String key : config.getConfigurationSection("blocks").getKeys(false)) {
                 ConfigurationSection blockConfig = config.getConfigurationSection("blocks." + key);
                 if (blockConfig == null) {
-                    plugin.getLogger().warning("Invalid configuration section for block: " + key + ". Skipping.");
+                    Logger.warning("Invalid configuration section for block: " + key + ". Skipping.");
                     continue;
                 }
 
                 boolean enabled = blockConfig.getBoolean("enabled", true); // Default to true if not specified
                 if (!enabled) {
-                    plugin.getLogger().info("Block entry '" + key + "' is disabled in block_populator.yml. Skipping.");
+                    Logger.info("Block entry '" + key + "' is disabled in block_populator.yml. Skipping.");
                     continue;
                 }
 
@@ -137,12 +154,11 @@ public class CustomBlockPopulator {
                         if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
                             if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                                 OraxenBlocks.place(oraxenId, blockLoc);
-                                plugin.getLogger().info("Placed Oraxen block '" + oraxenId + "' at " + blockLoc.toVector().toString() + " in world " + blockLoc.getWorld().getName());
                             } else {
-                                plugin.getLogger().warning("Invalid Oraxen ID '" + oraxenId + "' for block placement at " + blockLoc.toVector().toString() + ". Skipping.");
+                                Logger.warning("Invalid Oraxen ID '" + oraxenId + "' for block placement at " + blockLoc.toVector().toString() + ". Skipping.");
                             }
                         } else {
-                            plugin.getLogger().warning("Skipping block placement at " + blockLoc.toVector().toString() + " as it's already an Oraxen block.");
+                            Logger.warning("Skipping block placement at " + blockLoc.toVector().toString() + " as it's already an Oraxen block.");
                         }
                     }
                 }
@@ -158,12 +174,11 @@ public class CustomBlockPopulator {
                 if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                         OraxenBlocks.place(oraxenId, currentLoc);
-                        plugin.getLogger().info("Placed Oraxen block '" + oraxenId + "' (vein) at " + currentLoc.toVector().toString() + " in world " + currentLoc.getWorld().getName());
                     } else {
-                        plugin.getLogger().warning("Invalid Oraxen ID '" + oraxenId + "' for vein block placement at " + currentLoc.toVector().toString() + ". Skipping.");
+                        Logger.warning("Invalid Oraxen ID '" + oraxenId + "' for vein block placement at " + currentLoc.toVector().toString() + ". Skipping.");
                     }
                 } else {
-                    plugin.getLogger().warning("Skipping vein block placement at " + currentLoc.toVector().toString() + " as it's already an Oraxen block.");
+                    Logger.warning("Skipping vein block placement at " + currentLoc.toVector().toString() + " as it's already an Oraxen block.");
                 }
             }
 

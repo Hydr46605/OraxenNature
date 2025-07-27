@@ -8,10 +8,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 
 public final class OraxenNature extends JavaPlugin {
 
+    private static OraxenNature instance;
     private GrowthManager growthManager;
     private CustomBlockPopulator blockPopulator;
     private CustomTreePopulator treePopulator;
@@ -23,20 +25,27 @@ public final class OraxenNature extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        logInfo("OraxenNature is enabling...");
+        instance = this;
+
+        Logger.log("&8&m------------------------------------------------");
+        Logger.log("&r");
+        Logger.log("  &a&lOraxenNature &a- &fEnabled");
+        Logger.log("  &r");
+        Logger.log("  &fDeveloped by: &bHydr4");
+        Logger.log("  &fVersion: &e" + getDescription().getVersion());
+        Logger.log("&r");
 
         // Check if Oraxen is enabled
         if (getServer().getPluginManager().getPlugin("Oraxen") == null || !getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
-            getLogger().severe("Oraxen is not enabled! OraxenNature requires Oraxen to function. Disabling plugin.");
+            Logger.error("Oraxen is not enabled! OraxenNature requires Oraxen to function. Disabling plugin.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
         // Save default resources if they don't exist
-        saveResource("block_populator.yml", false);
-        saveResource("tree_populator.yml", false);
-        saveResource("growth_config.yml", false);
+        saveDefaultConfig("block_populator.yml");
+        saveDefaultConfig("tree_populator.yml");
+        saveDefaultConfig("growth_config.yml");
 
         // Load configurations
         blockPopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "block_populator.yml"));
@@ -54,7 +63,7 @@ public final class OraxenNature extends JavaPlugin {
             getCommand("oraxennature").setExecutor(new OraxenNatureCommand(this));
             getCommand("oraxennature").setTabCompleter(new OraxenNatureCommand(this));
         } else {
-            getLogger().severe("Failed to register command 'oraxennature'. It might be already registered or there's an issue with plugin.yml.");
+            Logger.error("Failed to register command 'oraxennature'. It might be already registered or there's an issue with plugin.yml.");
         }
 
         getServer().getPluginManager().registerEvents(new it.hydr4.oraxennature.listeners.ChunkLoadListener(this), this);
@@ -62,30 +71,48 @@ public final class OraxenNature extends JavaPlugin {
         for (World world : getServer().getWorlds()) {
             world.getPopulators().add(treePopulator);
         }
-        logInfo("OraxenNature enabled successfully!");
+
+        Logger.log("&r");
+        Logger.success("Loaded &e" + blockPopulator.getLoadedBlockNames().size() + "&a custom block populators:");
+        Logger.logList(blockPopulator.getLoadedBlockNames(), "  &7- &f");
+        Logger.success("Loaded &e" + treePopulator.getLoadedTreeNames().size() + "&a custom tree populators:");
+        Logger.logList(treePopulator.getLoadedTreeNames(), "  &7- &f");
+        Logger.success("Loaded &e" + growthManager.getLoadedGrowthConfigNames().size() + "&a growth configurations:");
+        Logger.logList(growthManager.getLoadedGrowthConfigNames(), "  &7- &f");
+        Logger.log("&r");
+        Logger.log("&8&m------------------------------------------------");
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
-        logInfo("OraxenNature is disabling...");
+        Logger.log("&8&m------------------------------------------------");
+        Logger.log("&r");
+        Logger.log("  &c&lOraxenNature &c- &fDisabled");
+        Logger.log("  &r");
+        Logger.log("  &fDeveloped by: &bHydr4");
+        Logger.log("  &fVersion: &e" + getDescription().getVersion());
+        Logger.log("&r");
+        Logger.log("&8&m------------------------------------------------");
         if (growthManager != null) {
             growthManager.stopGrowthTask();
         }
-        logInfo("OraxenNature disabled successfully!");
+    }
+
+    public static OraxenNature getInstance() {
+        return instance;
     }
 
     public void reloadAllConfigs() {
         reloadBlockPopulatorConfig();
         reloadTreePopulatorConfig();
         reloadGrowthConfig();
-        logInfo("All OraxenNature configurations reloaded.");
+        Logger.info("All OraxenNature configurations reloaded.");
     }
 
     public void reloadBlockPopulatorConfig() {
         blockPopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "block_populator.yml"));
         blockPopulator = new CustomBlockPopulator(this, blockPopulatorConfig);
-        logInfo("Block populator configuration reloaded.");
+        Logger.info("Block populator configuration reloaded.");
     }
 
     public void reloadTreePopulatorConfig() {
@@ -98,7 +125,7 @@ public final class OraxenNature extends JavaPlugin {
         for (World world : getServer().getWorlds()) {
             world.getPopulators().add(treePopulator);
         }
-        logInfo("Tree populator configuration reloaded.");
+        Logger.info("Tree populator configuration reloaded.");
     }
 
     public void reloadGrowthConfig() {
@@ -108,7 +135,7 @@ public final class OraxenNature extends JavaPlugin {
         growthConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "growth_config.yml"));
         growthManager = new GrowthManager(this, growthConfig);
         growthManager.startGrowthTask();
-        logInfo("Growth configuration reloaded.");
+        Logger.info("Growth configuration reloaded.");
     }
 
     public boolean isDebugMode() {
@@ -119,10 +146,10 @@ public final class OraxenNature extends JavaPlugin {
         this.debugMode = debugMode;
     }
 
-    // Custom logging method that respects debugMode
-    public void logInfo(String message) {
-        if (debugMode) {
-            getLogger().info(message);
+    private void saveDefaultConfig(String resourcePath) {
+        File resourceFile = new File(getDataFolder(), resourcePath);
+        if (!resourceFile.exists()) {
+            saveResource(resourcePath, false);
         }
     }
 
@@ -136,5 +163,13 @@ public final class OraxenNature extends JavaPlugin {
 
     public FileConfiguration getGrowthConfig() {
         return growthConfig;
+    }
+
+    public CustomBlockPopulator getBlockPopulator() {
+        return blockPopulator;
+    }
+
+    public CustomTreePopulator getTreePopulator() {
+        return treePopulator;
     }
 }

@@ -1,7 +1,8 @@
 package it.hydr4.oraxennature.populators.treePopulator;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.Logger;
+import org.bukkit.plugin.java.JavaPlugin;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Chunk;
@@ -24,11 +25,12 @@ import java.util.Random;
 
 public class CustomTreePopulator extends BlockPopulator {
 
-    private final JavaPlugin plugin;
+    private final OraxenNature plugin;
     private final List<CustomTree> customTrees;
     private final Random random;
+    private final List<String> loadedTreeNames = new ArrayList<>();
 
-    public CustomTreePopulator(JavaPlugin plugin, FileConfiguration config) {
+    public CustomTreePopulator(OraxenNature plugin, FileConfiguration config) {
         this.plugin = plugin;
         this.customTrees = loadCustomTrees(config);
         this.random = new Random();
@@ -38,7 +40,7 @@ public class CustomTreePopulator extends BlockPopulator {
         List<CustomTree> trees = new ArrayList<>();
         // No need to load file here, config is passed in
         if (!config.isConfigurationSection("trees")) {
-            plugin.getLogger().severe("tree_populator.yml is missing the 'trees' section or is malformed. Tree population may not work as expected.");
+            Logger.error("tree_populator.yml is missing the 'trees' section or is malformed. Tree population may not work as expected.");
         }
 
         ConfigurationSection treesSection = config.getConfigurationSection("trees");
@@ -46,7 +48,7 @@ public class CustomTreePopulator extends BlockPopulator {
             for (String key : treesSection.getKeys(false)) {
                 ConfigurationSection treeConfig = treesSection.getConfigurationSection(key);
                 if (treeConfig == null) {
-                    plugin.getLogger().warning("Invalid configuration section for tree: " + key + ". Skipping.");
+                    Logger.warning("Invalid configuration section for tree: " + key + ". Skipping.");
                     continue;
                 }
 
@@ -72,12 +74,17 @@ public class CustomTreePopulator extends BlockPopulator {
                 if (logId != null && leafId != null) {
                     trees.add(new CustomTree(key, logId, leafId, minY, maxY, chance, worlds, biomes,
                             trunkHeight, branchLengthMin, branchLengthMax, branchAngleVariation, maxBranches, leafRadius, leafDensity, treeType, enabled));
+                    loadedTreeNames.add(key);
                 } else {
-                    plugin.getLogger().warning("Invalid tree configuration for '" + key + "'. Missing log_oraxen_id or leaf_oraxen_id.");
+                    Logger.warning("Invalid tree configuration for '" + key + "'. Missing log_oraxen_id or leaf_oraxen_id.");
                 }
             }
         }
         return trees;
+    }
+
+    public List<String> getLoadedTreeNames() {
+        return loadedTreeNames;
     }
 
     @Override

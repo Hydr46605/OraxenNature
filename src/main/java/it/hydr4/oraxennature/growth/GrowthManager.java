@@ -1,6 +1,7 @@
 package it.hydr4.oraxennature.growth;
 
 import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,6 +18,7 @@ public class GrowthManager {
     private final OraxenNature plugin;
     private final Map<String, GrowableBlock> growableBlocks;
     private BukkitTask growthTask;
+    private final List<String> loadedGrowthConfigNames = new ArrayList<>();
 
     public GrowthManager(OraxenNature plugin, FileConfiguration config) {
         this.plugin = plugin;
@@ -45,12 +47,16 @@ public class GrowthManager {
 
                 if (initialId != null && !growthStages.isEmpty()) {
                     growableBlocks.put(initialId, new GrowableBlock(key, initialId, growthStages, growthInterval, growthConditions, decayConditions));
-                    plugin.getLogger().info("Loaded growable block: " + key + " (Initial ID: " + initialId + ")");
+                    loadedGrowthConfigNames.add(key);
                 } else {
-                    plugin.getLogger().warning("Invalid growable block configuration for '" + key + "'. Missing initial_oraxen_id or growth_stages.");
+                    Logger.warning("Invalid growable block configuration for '" + key + "'. Missing initial_oraxen_id or growth_stages.");
                 }
             }
         }
+    }
+
+    public List<String> getLoadedGrowthConfigNames() {
+        return loadedGrowthConfigNames;
     }
 
     private GrowableBlock.GrowthConditions parseConditions(ConfigurationSection section) {

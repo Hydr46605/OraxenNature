@@ -13,8 +13,8 @@ public class ChunkLoadListener implements Listener {
     private final CustomTreePopulator treePopulator;
 
     public ChunkLoadListener(OraxenNature plugin) {
-        this.blockPopulator = new CustomBlockPopulator(plugin, plugin.getBlockPopulatorConfig());
-        this.treePopulator = new CustomTreePopulator(plugin, plugin.getTreePopulatorConfig());
+        this.blockPopulator = plugin.getBlockPopulator();
+        this.treePopulator = plugin.getTreePopulator();
     }
 
     @EventHandler
