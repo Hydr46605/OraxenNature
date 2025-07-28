@@ -13,6 +13,7 @@ public class CustomTree {
     private final double chance;
     private final List<String> worlds;
     private final List<String> biomes;
+    private final List<String> surfaceMaterials;
     private final boolean enabled;
 
     // New advanced parameters
@@ -26,7 +27,7 @@ public class CustomTree {
     private final String treeType;
 
     public CustomTree(String id, String logOraxenId, String leafOraxenId, int minY, int maxY, double chance, List<String> worlds, List<String> biomes,
-                      int trunkHeight, int branchLengthMin, int branchLengthMax, int branchAngleVariation, int maxBranches, int leafRadius, double leafDensity, String treeType, boolean enabled) {
+                      int trunkHeight, int branchLengthMin, int branchLengthMax, int branchAngleVariation, int maxBranches, int leafRadius, double leafDensity, String treeType, boolean enabled, List<String> surfaceMaterials) {
         this.id = id;
         this.logOraxenId = logOraxenId;
         this.leafOraxenId = leafOraxenId;
@@ -44,6 +45,7 @@ public class CustomTree {
         this.leafDensity = leafDensity;
         this.treeType = treeType;
         this.enabled = enabled;
+        this.surfaceMaterials = surfaceMaterials;
     }
 
     public boolean isEnabled() {
@@ -112,5 +114,9 @@ public class CustomTree {
 
     public String getTreeType() {
         return treeType;
+    }
+
+    public List<String> getSurfaceMaterials() {
+        return surfaceMaterials;
     }
 }

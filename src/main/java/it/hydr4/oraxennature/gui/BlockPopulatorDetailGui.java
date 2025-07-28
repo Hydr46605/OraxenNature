@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import io.th0rgal.oraxen.api.OraxenItems;
 
 import java.io.File;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class BlockPopulatorDetailGui extends AbstractGui {
                     // Create new section with default values
                     config.createSection("blocks." + newName);
                     config.set("blocks." + newName + ".enabled", false);
-                    config.set("blocks." + newName + ".material", "STONE");
+                    
                     config.set("blocks." + newName + ".min-y", 0);
                     config.set("blocks." + newName + ".max-y", 64);
                     config.set("blocks." + newName + ".chance", 100);
@@ -92,6 +93,15 @@ public class BlockPopulatorDetailGui extends AbstractGui {
 
             ConfigurationSection blockSection = config.getConfigurationSection("blocks." + blockPopulatorKey);
             if (blockSection != null) {
+                // Display the Oraxen block icon if oraxen_id is set
+                String oraxenId = blockSection.getString("oraxen_id");
+                if (oraxenId != null && OraxenItems.getItemById(oraxenId) != null) {
+                    setItem(0, new DisplayItem(OraxenItems.getItemById(oraxenId).build()));
+                } else {
+                    // Default to stone if no Oraxen ID or Oraxen item not found
+                    setItem(0, new DisplayItem(new ItemStack(Material.STONE)));
+                }
+
                 int slot = 9; // Start displaying properties from the second row
                 for (String key : blockSection.getKeys(false)) {
                     Object value = blockSection.get(key);

@@ -61,6 +61,7 @@ public class CustomTreePopulator extends BlockPopulator {
                 double chance = treeConfig.getDouble("chance");
                 List<String> worlds = treeConfig.getStringList("worlds");
                 List<String> biomes = treeConfig.getStringList("biomes");
+                List<String> surfaceMaterials = treeConfig.getStringList("surface_materials");
 
                 // New advanced parameters
                 int trunkHeight = treeConfig.getInt("trunk_height", 5);
@@ -81,7 +82,7 @@ public class CustomTreePopulator extends BlockPopulator {
 
                 if (logId != null && leafId != null) {
                     trees.add(new CustomTree(key, logId, leafId, minY, maxY, chance, worlds, biomes,
-                            trunkHeight, branchLengthMin, branchLengthMax, branchAngleVariation, maxBranches, leafRadius, leafDensity, treeType, enabled));
+                            trunkHeight, branchLengthMin, branchLengthMax, branchAngleVariation, maxBranches, leafRadius, leafDensity, treeType, enabled, surfaceMaterials));
                     loadedTreeNames.add(key);
                 } else {
                     Logger.warning("Invalid tree configuration for '" + key + "'. Missing log_oraxen_id or leaf_oraxen_id.");
@@ -122,9 +123,39 @@ public class CustomTreePopulator extends BlockPopulator {
             if (random.nextDouble() < tree.getChance()) {
                 int x = random.nextInt(16);
                 int z = random.nextInt(16);
-                int y = random.nextInt(tree.getMaxY() - tree.getMinY() + 1) + tree.getMinY();
 
-                Location trunkBaseLoc = new Location(world, chunk.getX() * 16 + x, y, chunk.getZ() * 16 + z);
+                // Find suitable Y coordinate for tree base
+                int trunkBaseY = -1;
+                for (int currentY = tree.getMaxY(); currentY >= tree.getMinY(); currentY--) {
+                    Location checkLoc = new Location(world, chunk.getX() * 16 + x, currentY, chunk.getZ() * 16 + z);
+                    Material blockType = checkLoc.getBlock().getType();
+
+                    List<String> surfaceMaterials = tree.getSurfaceMaterials();
+                    boolean isSurfaceMaterial = false;
+                    if (surfaceMaterials.isEmpty()) {
+                        // Default surface materials if not specified
+                        if (blockType == Material.DIRT || blockType == Material.GRASS_BLOCK) {
+                            isSurfaceMaterial = true;
+                        }
+                    } else {
+                        if (surfaceMaterials.contains(blockType.name())) {
+                            isSurfaceMaterial = true;
+                        }
+                    }
+
+                    if (isSurfaceMaterial) {
+                        trunkBaseY = currentY + 1; // Set base one block above the surface material
+                        break;
+                    }
+                }
+
+                if (trunkBaseY == -1) {
+                    Logger.debug("  No suitable surface found for tree '" + tree.getId() + "' at chunk " + chunk.getX() + "," + chunk.getZ());
+                    continue; // Skip this tree if no suitable surface is found
+                }
+
+                Location trunkBaseLoc = new Location(world, chunk.getX() * 16 + x, trunkBaseY, chunk.getZ() * 16 + z);
+                Logger.debug("  Attempting to generate tree '" + tree.getId() + "' at " + trunkBaseLoc.toVector().toString() + " on surface.");
                 generateAdvancedTree(trunkBaseLoc, tree);
                 plugin.getLogger().info("Generated custom tree '" + tree.getId() + "' at " + trunkBaseLoc.toVector().toString() + " in world " + world.getName());
             }
@@ -136,8 +167,11 @@ public class CustomTreePopulator extends BlockPopulator {
         for (int i = 0; i < tree.getTrunkHeight(); i++) {
             Location loc = trunkBaseLoc.clone().add(0, i, 0);
             if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.DIRT || loc.getBlock().getType() == Material.GRASS_BLOCK) {
-                if (OraxenBlocks.getOraxenBlock(loc) == null) { // Only place if not already an Oraxen block
+                Object oraxenBlockAtLoc = OraxenBlocks.getOraxenBlock(loc);
+                Logger.debug("  Attempting to place log at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
+                if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
+                        Logger.debug("  Placing log with Oraxen ID: " + tree.getLogOraxenId() + " at " + loc.toVector().toString());
                         OraxenBlocks.place(tree.getLogOraxenId(), loc);
                         GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(tree.getLogOraxenId());
                         if (growable != null) {
@@ -209,8 +243,11 @@ public class CustomTreePopulator extends BlockPopulator {
                         if (random.nextDouble() < density) {
                             Location loc = centerLoc.clone().add(x, y, z);
                             if (loc.getBlock().getType() == Material.AIR) {
-                                if (OraxenBlocks.getOraxenBlock(loc) == null) { // Only place if not already an Oraxen block
+                                Object oraxenBlockAtLoc = OraxenBlocks.getOraxenBlock(loc);
+                                Logger.debug("  Attempting to place leaf at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
+                                if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
                                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(leafId) != null) {
+                                        Logger.debug("  Placing leaf with Oraxen ID: " + leafId + " at " + loc.toVector().toString());
                                         OraxenBlocks.place(leafId, loc);
                                     } else {
                                         plugin.getLogger().warning("Invalid Oraxen ID '" + leafId + "' for leaf placement at " + loc.toVector().toString() + ". Skipping.");

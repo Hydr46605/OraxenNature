@@ -158,9 +158,13 @@ public class CustomBlockPopulator {
                     generateVein(blockLoc, oraxenId, currentVeinSize, replaceableMaterials, placeOnMaterials, placeBelowMaterials, airOnly);
                 } else {
                     if (canPlaceBlock(block, replaceableMaterials, placeOnMaterials, placeBelowMaterials, airOnly)) {
-                        if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
+                        Object oraxenBlockAtLoc = OraxenBlocks.getOraxenBlock(block.getLocation());
+                        Logger.debug("  Raw Oraxen block object at location " + block.getLocation().toVector().toString() + ": " + oraxenBlockAtLoc);
+                        if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
                             if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
+                                Logger.debug("Attempting to place Oraxen block with ID: " + oraxenId + " at location: " + blockLoc.toVector().toString());
                                 OraxenBlocks.place(oraxenId, blockLoc);
+                                Logger.debug("OraxenBlocks.place() called for ID: " + oraxenId + " at location: " + blockLoc.toVector().toString());
                                 GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
                                 if (growable != null) {
                                     plugin.getGrowthManager().addTrackedBlock(block, growable);
@@ -184,7 +188,9 @@ public class CustomBlockPopulator {
             if (canPlaceBlock(currentBlock, replaceableMaterials, placeOnMaterials, placeBelowMaterials, airOnly)) {
                 if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
+                        Logger.debug("Attempting to place Oraxen vein block with ID: " + oraxenId + " at location: " + currentLoc.toVector().toString());
                         OraxenBlocks.place(oraxenId, currentLoc);
+                        Logger.debug("OraxenBlocks.place() called for vein ID: " + oraxenId + " at location: " + currentLoc.toVector().toString());
                         GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
                         if (growable != null) {
                             plugin.getGrowthManager().addTrackedBlock(currentBlock, growable);
@@ -207,27 +213,37 @@ public class CustomBlockPopulator {
         Material blockAboveType = block.getLocation().add(0, 1, 0).getBlock().getType();
         Material blockBelowType = block.getLocation().add(0, -1, 0).getBlock().getType();
 
+        Logger.debug("canPlaceBlock check at " + block.getLocation().toVector().toString() + ":");
+        Logger.debug("  Block Type: " + blockType.name());
+        Logger.debug("  Block Above Type: " + blockAboveType.name());
+        Logger.debug("  Block Below Type: " + blockBelowType.name());
+        Logger.debug("  Replaceable Materials: " + replaceableMaterials);
+        Logger.debug("  Place On Materials: " + placeOnMaterials);
+        Logger.debug("  Place Below Materials: " + placeBelowMaterials);
+        Logger.debug("  Air Only: " + airOnly);
+
         // Check place_on
         if (!placeOnMaterials.isEmpty()) {
-            if (placeOnMaterials.contains(blockBelowType.name())) {
-                return !airOnly || blockType == Material.AIR;
-            }
-            return false;
+            boolean result = placeOnMaterials.contains(blockBelowType.name()) && (!airOnly || blockType == Material.AIR);
+            Logger.debug("  Place On check result: " + result);
+            return result;
         }
 
         // Check place_below
         if (!placeBelowMaterials.isEmpty()) {
-            if (placeBelowMaterials.contains(blockAboveType.name())) {
-                return !airOnly || blockType == Material.AIR;
-            }
-            return false;
+            boolean result = placeBelowMaterials.contains(blockAboveType.name()) && (!airOnly || blockType == Material.AIR);
+            Logger.debug("  Place Below check result: " + result);
+            return result;
         }
 
         // Check replaceable_materials
         if (!replaceableMaterials.isEmpty()) {
-            return replaceableMaterials.contains(blockType.name());
+            boolean result = replaceableMaterials.contains(blockType.name());
+            Logger.debug("  Replaceable Materials check result: " + result);
+            return result;
         }
 
+        Logger.debug("  No specific rules, allowing placement.");
         return true; // If no specific rules, allow placement
     }
 

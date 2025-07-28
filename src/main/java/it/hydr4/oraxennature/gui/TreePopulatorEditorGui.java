@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.configuration.file.YamlConfiguration;
+import io.th0rgal.oraxen.api.OraxenItems;
 
 import java.io.File;
 import java.util.Set;
@@ -25,8 +26,15 @@ public class TreePopulatorEditorGui extends PaginatedGui {
         if (config.isConfigurationSection("trees")) {
             Set<String> treeKeys = config.getConfigurationSection("trees").getKeys(false);
             for (String key : treeKeys) {
-                // TODO: Replace with an Oraxen block icon for better visual representation
-                ItemStack item = new ItemStack(Material.STONE);
+                // Get the log_oraxen_id from the tree's configuration
+                String logOraxenId = config.getString("trees." + key + ".log_oraxen_id");
+                ItemStack item;
+                if (logOraxenId != null && OraxenItems.getItemById(logOraxenId) != null) {
+                    item = OraxenItems.getItemById(logOraxenId).build();
+                } else {
+                    // Default to oak log if no Oraxen ID or Oraxen item not found
+                    item = new ItemStack(Material.OAK_LOG);
+                }
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName("§b" + key);

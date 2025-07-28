@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.configuration.file.YamlConfiguration;
+import io.th0rgal.oraxen.api.OraxenItems;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,8 +27,15 @@ public class BlockPopulatorEditorGui extends PaginatedGui {
         if (config.isConfigurationSection("blocks")) {
             Set<String> blockKeys = config.getConfigurationSection("blocks").getKeys(false);
             for (String key : blockKeys) {
-                // TODO: Replace with an Oraxen block icon for better visual representation
-                ItemStack item = new ItemStack(Material.STONE);
+                // Get the oraxen_id from the block's configuration
+                String oraxenId = config.getString("blocks." + key + ".oraxen_id");
+                ItemStack item;
+                if (oraxenId != null && OraxenItems.getItemById(oraxenId) != null) {
+                    item = OraxenItems.getItemById(oraxenId).build();
+                } else {
+                    // Default to stone if no Oraxen ID or Oraxen item not found
+                    item = new ItemStack(Material.STONE);
+                }
                 ItemMeta meta = item.getItemMeta();
                 if (meta != null) {
                     meta.setDisplayName("§b" + key);

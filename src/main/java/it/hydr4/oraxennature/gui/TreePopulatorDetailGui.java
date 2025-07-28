@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import io.th0rgal.oraxen.api.OraxenItems;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +51,8 @@ public class TreePopulatorDetailGui extends AbstractGui {
                     // Create new section with default values
                     config.createSection("trees." + newName);
                     config.set("trees." + newName + ".enabled", false);
-                    config.set("trees." + newName + ".tree-type", "OAK");
+                    config.set("trees." + newName + ".log_oraxen_id", "null");
+                    config.set("trees." + newName + ".leaf_oraxen_id", "null");
                     config.set("trees." + newName + ".min-y", 0);
                     config.set("trees." + newName + ".max-y", 64);
                     config.set("trees." + newName + ".chance", 100);
@@ -91,6 +93,15 @@ public class TreePopulatorDetailGui extends AbstractGui {
 
             ConfigurationSection treeSection = config.getConfigurationSection("trees." + treePopulatorKey);
             if (treeSection != null) {
+                // Display the Oraxen log icon if log_oraxen_id is set
+                String logOraxenId = treeSection.getString("log_oraxen_id");
+                if (logOraxenId != null && OraxenItems.getItemById(logOraxenId) != null) {
+                    setItem(0, new DisplayItem(OraxenItems.getItemById(logOraxenId).build()));
+                } else {
+                    // Default to oak log if no Oraxen ID or Oraxen item not found
+                    setItem(0, new DisplayItem(new ItemStack(Material.OAK_LOG)));
+                }
+
                 int slot = 9; // Start displaying properties from the second row
                 for (String key : treeSection.getKeys(false)) {
                     Object value = treeSection.get(key);
