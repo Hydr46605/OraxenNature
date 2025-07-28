@@ -1,0 +1,136 @@
+package it.hydr4.oraxennature.populators.treePopulator;
+
+import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.utils.Logger;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+
+import java.io.File;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+public class TreeGenerator {
+
+    private final OraxenNature plugin;
+    private final Random random;
+    private final SchematicPaster schematicPaster;
+
+    public TreeGenerator(OraxenNature plugin) {
+        this.plugin = plugin;
+        this.random = new Random();
+        this.schematicPaster = new SchematicPaster(plugin);
+    }
+
+    public void generateTree(Location trunkBaseLoc, CustomTree tree) {
+        if (tree.getSchematic() != null) {
+            if (plugin.getServer().getPluginManager().isPluginEnabled("WorldEdit")) {
+                File schematicFile = new File(plugin.getDataFolder(), "schematics/" + tree.getSchematic());
+                if (schematicFile.exists()) {
+                    schematicPaster.pasteSchematic(trunkBaseLoc, schematicFile);
+                } else {
+                    Logger.error("Schematic file not found: " + schematicFile.getPath());
+                }
+            } else {
+                Logger.error("WorldEdit is not enabled, but a schematic is defined for tree: " + tree.getId());
+            }
+            return;
+        }
+
+        List<Map.Entry<Location, String>> blocksToPlace = new ArrayList<>();
+        int height = random.nextInt(tree.getMaxHeight() - tree.getMinHeight() + 1) + tree.getMinHeight();
+
+        switch (tree.getShape().toUpperCase()) {
+            case "PINE":
+                generatePineTree(trunkBaseLoc, tree, height, blocksToPlace);
+                break;
+            case "OAK":
+            default:
+                generateOakTree(trunkBaseLoc, tree, height, blocksToPlace);
+                break;
+        }
+
+        Logger.debug("Scheduling TreeGenerationTask with " + blocksToPlace.size() + " blocks.");
+        new TreeGenerationTask(plugin, blocksToPlace).runTaskTimer(plugin, 0L, 1L);
+    }
+
+    private void generateOakTree(Location trunkBaseLoc, CustomTree tree, int height, List<Map.Entry<Location, String>> blocksToPlace) {
+        // Generate trunk
+        for (int i = 0; i < height; i++) {
+            placeBlock(blocksToPlace, trunkBaseLoc.clone().add(0, i, 0), tree.getLogOraxenId());
+        }
+
+        // Generate canopy
+        Location canopyCenter = trunkBaseLoc.clone().add(0, height, 0);
+        int canopyRadius = random.nextInt(tree.getCanopyMaxRadius() - tree.getCanopyMinRadius() + 1) + tree.getCanopyMinRadius();
+        generateCanopy(canopyCenter, canopyRadius, tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
+
+        // Generate branches
+        int numBranches = height / 4;
+        for (int i = 0; i < numBranches; i++) {
+            Location branchStart = canopyCenter.clone().subtract(0, random.nextInt(height / 2), 0);
+            generateBranch(branchStart, tree, blocksToPlace);
+        }
+    }
+
+    private void generatePineTree(Location trunkBaseLoc, CustomTree tree, int height, List<Map.Entry<Location, String>> blocksToPlace) {
+        // Generate trunk
+        for (int i = 0; i < height; i++) {
+            placeBlock(blocksToPlace, trunkBaseLoc.clone().add(0, i, 0), tree.getLogOraxenId());
+        }
+
+        // Generate canopy layers
+        for (int y = height; y >= height / 2; y--) {
+            int radius = (height - y) / 2 + 1;
+            generateCanopyLayer(trunkBaseLoc.clone().add(0, y, 0), radius, tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
+        }
+    }
+
+    private void generateBranch(Location start, CustomTree tree, List<Map.Entry<Location, String>> blocksToPlace) {
+        Location current = start.clone();
+        int length = random.nextInt(3) + 2;
+        double yaw = random.nextDouble() * 2 * Math.PI;
+        double pitch = Math.toRadians(30);
+
+        for (int i = 0; i < length; i++) {
+            current.add(Math.cos(yaw), Math.sin(pitch), Math.sin(yaw));
+            placeBlock(blocksToPlace, current, tree.getLogOraxenId());
+        }
+        generateCanopy(current, tree.getCanopyMinRadius(), tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
+    }
+
+    private void generateCanopy(Location center, int radius, double density, String leafId, List<Map.Entry<Location, String>> blocksToPlace) {
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    if (x * x + y * y + z * z <= radius * radius && random.nextDouble() < density) {
+                        placeBlock(blocksToPlace, center.clone().add(x, y, z), leafId);
+                    }
+                }
+            }
+        }
+    }
+
+    private void generateCanopyLayer(Location center, int radius, double density, String leafId, List<Map.Entry<Location, String>> blocksToPlace) {
+        for (int x = -radius; x <= radius; x++) {
+            for (int z = -radius; z <= radius; z++) {
+                if (x * x + z * z <= radius * radius && random.nextDouble() < density) {
+                    placeBlock(blocksToPlace, center.clone().add(x, 0, z), leafId);
+                }
+            }
+        }
+    }
+
+    private void placeBlock(List<Map.Entry<Location, String>> blocksToPlace, Location loc, String oraxenId) {
+        if (isReplaceable(loc.getBlock())) {
+            blocksToPlace.add(new AbstractMap.SimpleEntry<>(loc, oraxenId));
+        }
+    }
+
+    private boolean isReplaceable(Block block) {
+        return block.getType().isAir() || block.getType() == Material.DIRT || block.getType() == Material.GRASS_BLOCK || block.getType().toString().contains("LEAVES");
+    }
+}

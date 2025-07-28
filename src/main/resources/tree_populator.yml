@@ -1,26 +1,60 @@
 trees:
-  example_advanced_tree:
-    enabled: true # Set to true to enable this tree populator
-    log_oraxen_id: "oak_log" # Using vanilla Oraxen IDs for testing
-    leaf_oraxen_id: "oak_leaves" # Using vanilla Oraxen IDs for testing
-    min_y: 60
-    max_y: 100
-    chance: 0.5 # Increased chance for testing
+  oak_tree:
+    enabled: true
+    log_oraxen_id: "oak_log"
+    leaf_oraxen_id: "oak_leaves"
+    chance: 0.1 # 10% chance to spawn in a chunk
     worlds:
       - world
     biomes:
       - PLAINS
       - FOREST
-    # New advanced parameters
-    trunk_height: 5 # Base height of the trunk
-    branch_length_min: 2 # Minimum length of a branch segment
-    branch_length_max: 4 # Maximum length of a branch segment
-    branch_angle_variation: 30 # Max angle deviation for branches (degrees)
-    max_branches: 5 # Max number of branches from a single point
-    leaf_radius: 2 # Radius of the leaf canopy around branches
-    leaf_density: 0.8 # Probability of placing a leaf block (0.0-1.0)
-    tree_type: "BRANCHING" # Could be "SIMPLE", "BRANCHING", "L_SYSTEM" etc.
-    surface_materials: # Added surface materials
+    surface_materials:
       - GRASS_BLOCK
       - DIRT
-      - STONE
+
+    # New Simplified Configuration
+    shape: "OAK" # OAK or PINE
+    height:
+      min: 6
+      max: 9
+    canopy:
+      radius:
+        min: 3
+        max: 4
+      density: 0.7
+
+  pine_tree:
+    enabled: true
+    log_oraxen_id: "spruce_log"
+    leaf_oraxen_id: "spruce_leaves"
+    chance: 0.05 # 5% chance to spawn in a chunk
+    worlds:
+      - world
+    biomes:
+      - TAIGA
+    surface_materials:
+      - GRASS_BLOCK
+      - DIRT
+
+    # New Simplified Configuration
+    shape: "PINE"
+    height:
+      min: 8
+      max: 12
+    canopy:
+      radius:
+        min: 2
+        max: 3
+      density: 0.8
+
+  schematic_tree:
+    enabled: true
+    schematic: "my_awesome_tree.schem" # The name of the schematic file in the schematics folder
+    chance: 0.2 # 20% chance to spawn in a chunk
+    worlds:
+      - world
+    biomes:
+      - FOREST
+    surface_materials:
+      - GRASS_BLOCK

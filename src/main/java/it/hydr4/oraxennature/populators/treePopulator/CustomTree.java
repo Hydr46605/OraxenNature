@@ -1,56 +1,49 @@
 package it.hydr4.oraxennature.populators.treePopulator;
 
-import org.bukkit.block.Biome;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
 public class CustomTree {
+
     private final String id;
     private final String logOraxenId;
     private final String leafOraxenId;
-    private final int minY;
-    private final int maxY;
     private final double chance;
     private final List<String> worlds;
     private final List<String> biomes;
     private final List<String> surfaceMaterials;
-    private final boolean enabled;
 
-    // New advanced parameters
-    private final int trunkHeight;
-    private final int branchLengthMin;
-    private final int branchLengthMax;
-    private final int branchAngleVariation;
-    private final int maxBranches;
-    private final int leafRadius;
-    private final double leafDensity;
-    private final String treeType;
+    // New, simplified configuration
+    private final String shape;
+    private final int minHeight;
+    private final int maxHeight;
+    private final int canopyMinRadius;
+    private final int canopyMaxRadius;
+    private final double canopyDensity;
 
-    public CustomTree(String id, String logOraxenId, String leafOraxenId, int minY, int maxY, double chance, List<String> worlds, List<String> biomes,
-                      int trunkHeight, int branchLengthMin, int branchLengthMax, int branchAngleVariation, int maxBranches, int leafRadius, double leafDensity, String treeType, boolean enabled, List<String> surfaceMaterials) {
+    private final String schematic;
+
+    public CustomTree(String id, ConfigurationSection config) {
         this.id = id;
-        this.logOraxenId = logOraxenId;
-        this.leafOraxenId = leafOraxenId;
-        this.minY = minY;
-        this.maxY = maxY;
-        this.chance = chance;
-        this.worlds = worlds;
-        this.biomes = biomes;
-        this.trunkHeight = trunkHeight;
-        this.branchLengthMin = branchLengthMin;
-        this.branchLengthMax = branchLengthMax;
-        this.branchAngleVariation = branchAngleVariation;
-        this.maxBranches = maxBranches;
-        this.leafRadius = leafRadius;
-        this.leafDensity = leafDensity;
-        this.treeType = treeType;
-        this.enabled = enabled;
-        this.surfaceMaterials = surfaceMaterials;
+        this.logOraxenId = config.getString("log_oraxen_id");
+        this.leafOraxenId = config.getString("leaf_oraxen_id");
+        this.chance = config.getDouble("chance", 0.1);
+        this.worlds = config.getStringList("worlds");
+        this.biomes = config.getStringList("biomes");
+        this.surfaceMaterials = config.getStringList("surface_materials");
+
+        // New simplified config
+        this.shape = config.getString("shape", "OAK");
+        this.minHeight = config.getInt("height.min", 5);
+        this.maxHeight = config.getInt("height.max", 8);
+        this.canopyMinRadius = config.getInt("canopy.radius.min", 2);
+        this.canopyMaxRadius = config.getInt("canopy.radius.max", 4);
+        this.canopyDensity = config.getDouble("canopy.density", 0.6);
+        this.schematic = config.getString("schematic");
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+    // Getters for all fields
 
     public String getId() {
         return id;
@@ -62,14 +55,6 @@ public class CustomTree {
 
     public String getLeafOraxenId() {
         return leafOraxenId;
-    }
-
-    public int getMinY() {
-        return minY;
-    }
-
-    public int getMaxY() {
-        return maxY;
     }
 
     public double getChance() {
@@ -84,39 +69,35 @@ public class CustomTree {
         return biomes;
     }
 
-    public int getTrunkHeight() {
-        return trunkHeight;
-    }
-
-    public int getBranchLengthMin() {
-        return branchLengthMin;
-    }
-
-    public int getBranchLengthMax() {
-        return branchLengthMax;
-    }
-
-    public int getBranchAngleVariation() {
-        return branchAngleVariation;
-    }
-
-    public int getMaxBranches() {
-        return maxBranches;
-    }
-
-    public int getLeafRadius() {
-        return leafRadius;
-    }
-
-    public double getLeafDensity() {
-        return leafDensity;
-    }
-
-    public String getTreeType() {
-        return treeType;
-    }
-
     public List<String> getSurfaceMaterials() {
         return surfaceMaterials;
+    }
+
+    public String getShape() {
+        return shape;
+    }
+
+    public int getMinHeight() {
+        return minHeight;
+    }
+
+    public int getMaxHeight() {
+        return maxHeight;
+    }
+
+    public int getCanopyMinRadius() {
+        return canopyMinRadius;
+    }
+
+    public int getCanopyMaxRadius() {
+        return canopyMaxRadius;
+    }
+
+    public double getCanopyDensity() {
+        return canopyDensity;
+    }
+
+    public String getSchematic() {
+        return schematic;
     }
 }

@@ -2,49 +2,39 @@ package it.hydr4.oraxennature.populators.treePopulator;
 
 import it.hydr4.oraxennature.OraxenNature;
 import it.hydr4.oraxennature.utils.Logger;
-import it.hydr4.oraxennature.growth.GrowableBlock;
-import it.hydr4.oraxennature.growth.GrowthManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import io.th0rgal.oraxen.api.OraxenBlocks;
-import io.th0rgal.oraxen.api.OraxenItems;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Biome;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.generator.BlockPopulator;
-import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
-import java.util.Map;
-import java.util.AbstractMap.SimpleEntry;
 
 public class CustomTreePopulator extends BlockPopulator {
 
     private final OraxenNature plugin;
     private final List<CustomTree> customTrees;
     private final Random random;
-    private final List<String> loadedTreeNames = new ArrayList<>();
+    private final TreeGenerator treeGenerator;
 
     public CustomTreePopulator(OraxenNature plugin, FileConfiguration config) {
         this.plugin = plugin;
         this.customTrees = loadCustomTrees(config);
         this.random = new Random();
+        this.treeGenerator = new TreeGenerator(plugin);
     }
 
     private List<CustomTree> loadCustomTrees(FileConfiguration config) {
         List<CustomTree> trees = new ArrayList<>();
-        // No need to load file here, config is passed in
         if (!config.isConfigurationSection("trees")) {
             Logger.error("tree_populator.yml is missing the 'trees' section or is malformed. Tree population may not work as expected.");
+            return trees;
         }
 
         ConfigurationSection treesSection = config.getConfigurationSection("trees");
@@ -56,205 +46,49 @@ public class CustomTreePopulator extends BlockPopulator {
                     continue;
                 }
 
-                String logId = treeConfig.getString("log_oraxen_id");
-                String leafId = treeConfig.getString("leaf_oraxen_id");
-                int minY = treeConfig.getInt("min_y");
-                int maxY = treeConfig.getInt("max_y");
-                double chance = treeConfig.getDouble("chance");
-                List<String> worlds = treeConfig.getStringList("worlds");
-                List<String> biomes = treeConfig.getStringList("biomes");
-                List<String> surfaceMaterials = treeConfig.getStringList("surface_materials");
-
-                // New advanced parameters
-                int trunkHeight = treeConfig.getInt("trunk_height", 5);
-                int branchLengthMin = treeConfig.getInt("branch_length_min", 2);
-                int branchLengthMax = treeConfig.getInt("branch_length_max", 4);
-                int branchAngleVariation = treeConfig.getInt("branch_angle_variation", 30);
-                int maxBranches = treeConfig.getInt("max_branches", 5);
-                int leafRadius = treeConfig.getInt("leaf_radius", 2);
-                double leafDensity = treeConfig.getDouble("leaf_density", 0.8);
-                String treeType = treeConfig.getString("tree_type", "BRANCHING");
-                boolean enabled = treeConfig.getBoolean("enabled", true);
-                it.hydr4.oraxennature.utils.Logger.debug("Tree config for " + key + ": enabled=" + enabled + ", chance=" + chance + ", worlds=" + worlds + ", biomes=" + biomes);
-
-                if (!enabled) {
-                    it.hydr4.oraxennature.utils.Logger.debug("Tree entry '" + key + "' is disabled in tree_populator.yml. Skipping loading.");
+                if (!treeConfig.getBoolean("enabled", true)) {
+                    Logger.debug("Tree entry '" + key + "' is disabled in tree_populator.yml. Skipping loading.");
                     continue;
                 }
 
-                if (logId != null && leafId != null) {
-                    trees.add(new CustomTree(key, logId, leafId, minY, maxY, chance, worlds, biomes,
-                            trunkHeight, branchLengthMin, branchLengthMax, branchAngleVariation, maxBranches, leafRadius, leafDensity, treeType, enabled, surfaceMaterials));
-                    loadedTreeNames.add(key);
-                } else {
-                    Logger.warning("Invalid tree configuration for '" + key + "'. Missing log_oraxen_id or leaf_oraxen_id.");
-                }
+                trees.add(new CustomTree(key, treeConfig));
             }
         }
         return trees;
     }
 
-    public List<String> getLoadedTreeNames() {
-        return loadedTreeNames;
+    public List<CustomTree> getLoadedTrees() {
+        return customTrees;
     }
 
     @Override
     public void populate(@NotNull World world, @NotNull Random random, @NotNull Chunk chunk) {
-        it.hydr4.oraxennature.utils.Logger.debug("Attempting to populate trees in chunk at " + chunk.getX() + ", " + chunk.getZ() + " in world " + world.getName());
-        // Check if Oraxen is enabled and loaded
         if (plugin.getServer().getPluginManager().getPlugin("Oraxen") == null || !plugin.getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
-            plugin.getLogger().warning("Oraxen is not enabled. Skipping tree population in world " + world.getName() + ".");
             return;
         }
 
         for (CustomTree tree : customTrees) {
-            if (!tree.isEnabled()) {
-                it.hydr4.oraxennature.utils.Logger.debug("Tree entry '" + tree.getId() + "' is disabled in tree_populator.yml. Skipping population.");
-                continue;
-            }
-
             if (!tree.getWorlds().isEmpty() && !tree.getWorlds().contains(world.getName())) {
                 continue;
             }
 
-            Biome chunkBiome = chunk.getBlock(0, 0, 0).getBiome();
+            Biome chunkBiome = chunk.getBlock(8, 128, 8).getBiome();
             if (!tree.getBiomes().isEmpty() && !tree.getBiomes().contains(chunkBiome.name())) {
                 continue;
             }
 
-            if (random.nextDouble() < tree.getChance()) {
-                int x = random.nextInt(16);
-                int z = random.nextInt(16);
+            if (this.random.nextDouble() < tree.getChance()) {
+                int x = this.random.nextInt(16) + chunk.getX() * 16;
+                int z = this.random.nextInt(16) + chunk.getZ() * 16;
+                int y = world.getHighestBlockYAt(x, z);
 
-                // Find suitable Y coordinate for tree base
-                int trunkBaseY = -1;
-                for (int currentY = tree.getMaxY(); currentY >= tree.getMinY(); currentY--) {
-                    Location checkLoc = new Location(world, chunk.getX() * 16 + x, currentY, chunk.getZ() * 16 + z);
-                    Material blockType = checkLoc.getBlock().getType();
+                Location surfaceLoc = new Location(world, x, y, z);
+                Material surfaceBlock = surfaceLoc.getBlock().getType();
 
-                    List<String> surfaceMaterials = tree.getSurfaceMaterials();
-                    boolean isSurfaceMaterial = false;
-                    if (surfaceMaterials.isEmpty()) {
-                        // Default surface materials if not specified
-                        if (blockType == Material.DIRT || blockType == Material.GRASS_BLOCK) {
-                            isSurfaceMaterial = true;
-                        }
-                    } else {
-                        if (surfaceMaterials.contains(blockType.name())) {
-                            isSurfaceMaterial = true;
-                        }
-                    }
-
-                    if (isSurfaceMaterial) {
-                        trunkBaseY = currentY + 1; // Set base one block above the surface material
-                        break;
-                    }
-                }
-
-                if (trunkBaseY == -1) {
-                    Logger.debug("  No suitable surface found for tree '" + tree.getId() + "' at chunk " + chunk.getX() + "," + chunk.getZ());
-                    continue; // Skip this tree if no suitable surface is found
-                }
-
-                Location trunkBaseLoc = new Location(world, chunk.getX() * 16 + x, trunkBaseY, chunk.getZ() * 16 + z);
-                Logger.debug("  Attempting to generate tree '" + tree.getId() + "' at " + trunkBaseLoc.toVector().toString() + " on surface.");
-                generateAdvancedTree(trunkBaseLoc, tree);
-                plugin.getLogger().info("Generated custom tree '" + tree.getId() + "' at " + trunkBaseLoc.toVector().toString() + " in world " + world.getName());
-            }
-        }
-    }
-
-    private void generateAdvancedTree(Location trunkBaseLoc, CustomTree tree) {
-        List<Map.Entry<Location, String>> blocksToPlace = new ArrayList<>();
-
-        // Generate trunk
-        for (int i = 0; i < tree.getTrunkHeight(); i++) {
-            Location loc = trunkBaseLoc.clone().add(0, i, 0);
-            if (loc.getBlock().getType() == Material.AIR || loc.getBlock().getType() == Material.DIRT || loc.getBlock().getType() == Material.GRASS_BLOCK) {
-                Object oraxenBlockAtLoc = OraxenBlocks.getOraxenBlock(loc);
-                Logger.debug("  Attempting to place log at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
-                if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
-                    if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
-                        blocksToPlace.add(new SimpleEntry<>(loc, tree.getLogOraxenId()));
-                    } else {
-                        plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for log placement at " + loc.toVector().toString() + ". Skipping.");
-                    }
-                } else {
-                    plugin.getLogger().warning("Skipping log placement at " + loc.toVector().toString() + " as it's already an Oraxen block.");
-                }
-            }
-        }
-
-        // Start branching from the top of the trunk
-        Location branchStartLoc = trunkBaseLoc.clone().add(0, tree.getTrunkHeight(), 0);
-        generateBranch(branchStartLoc, tree, 0, 0, 1.0, blocksToPlace); // Pass blocksToPlace list
-
-        // Schedule the asynchronous task to place all collected blocks
-        new TreeGenerationTask(plugin, blocksToPlace).runTaskTimer(plugin, 0L, 1L);
-    }
-
-    private void generateBranch(Location currentLoc, CustomTree tree, double pitch, double yaw, double scale, List<Map.Entry<Location, String>> blocksToPlace) {
-        if (scale < 0.1) return; // Stop branching if scale is too small
-
-        int branchLength = random.nextInt(tree.getBranchLengthMax() - tree.getBranchLengthMin() + 1) + tree.getBranchLengthMin();
-
-        for (int i = 0; i < branchLength; i++) {
-            // Calculate new position based on pitch and yaw
-            double dx = Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * scale;
-            double dy = Math.sin(Math.toRadians(pitch)) * scale;
-            double dz = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)) * scale;
-
-            currentLoc.add(dx, dy, dz);
-            Block block = currentLoc.getBlock();
-
-            if (block.getType() == Material.AIR || block.getType().isOccluding()) { // Place log if air or replaceable
-                if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
-                    if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
-                        blocksToPlace.add(new SimpleEntry<>(currentLoc, tree.getLogOraxenId()));
-                    } else {
-                        plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for branch log placement at " + currentLoc.toVector().toString() + ". Skipping.");
-                    }
-                } else {
-                    plugin.getLogger().warning("Skipping branch log placement at " + currentLoc.toVector().toString() + " as it's already an Oraxen block.");
-                }
-            }
-
-            // Place leaves around the branch segment
-            placeLeaves(currentLoc, tree.getLeafOraxenId(), tree.getLeafRadius(), tree.getLeafDensity(), blocksToPlace);
-        }
-
-        // Branching out
-        if (tree.getMaxBranches() > 0) {
-            for (int i = 0; i < random.nextInt(tree.getMaxBranches()) + 1; i++) {
-                double newPitch = pitch + (random.nextDouble() * tree.getBranchAngleVariation() * 2) - tree.getBranchAngleVariation();
-                double newYaw = yaw + (random.nextDouble() * tree.getBranchAngleVariation() * 2) - tree.getBranchAngleVariation();
-                generateBranch(currentLoc.clone(), tree, newPitch, newYaw, scale * 0.8, blocksToPlace); // Pass blocksToPlace list
-            }
-        }
-    }
-
-    private void placeLeaves(Location centerLoc, String leafId, int radius, double density, List<Map.Entry<Location, String>> blocksToPlace) {
-        for (int x = -radius; x <= radius; x++) {
-            for (int y = -radius; y <= radius; y++) {
-                for (int z = -radius; z <= radius; z++) {
-                    if (x * x + y * y + z * z <= radius * radius) { // Sphere shape
-                        if (random.nextDouble() < density) {
-                            Location loc = centerLoc.clone().add(x, y, z);
-                            if (loc.getBlock().getType() == Material.AIR) {
-                                Object oraxenBlockAtLoc = OraxenBlocks.getOraxenBlock(loc);
-                                Logger.debug("  Attempting to place leaf at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
-                                if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
-                                    if (io.th0rgal.oraxen.api.OraxenItems.getItemById(leafId) != null) {
-                                        blocksToPlace.add(new SimpleEntry<>(loc, leafId));
-                                    } else {
-                                        plugin.getLogger().warning("Invalid Oraxen ID '" + leafId + "' for leaf placement at " + loc.toVector().toString() + ". Skipping.");
-                                    }
-                                } else {
-                                    plugin.getLogger().warning("Skipping leaf placement at " + loc.toVector().toString() + " as it's already an Oraxen block.");
-                                }
-                            }
-                        }
-                    }
+                if (tree.getSurfaceMaterials().contains(surfaceBlock.name())) {
+                    Location trunkBaseLoc = surfaceLoc.clone().add(0, 1, 0);
+                    treeGenerator.generateTree(trunkBaseLoc, tree);
+                    Logger.info("Successfully spawned tree '" + tree.getId() + "' at " + trunkBaseLoc.toVector());
                 }
             }
         }

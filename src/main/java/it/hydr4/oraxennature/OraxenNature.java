@@ -95,8 +95,8 @@ public final class OraxenNature extends JavaPlugin {
         Logger.log("&r");
         Logger.success("Loaded &e" + blockPopulator.getLoadedBlockNames().size() + "&a custom block populators:");
         Logger.logList(blockPopulator.getLoadedBlockNames(), "  &7- &f");
-        Logger.success("Loaded &e" + treePopulator.getLoadedTreeNames().size() + "&a custom tree populators:");
-        Logger.logList(treePopulator.getLoadedTreeNames(), "  &7- &f");
+        Logger.success("Loaded &e" + treePopulator.getLoadedTrees().size() + "&a custom tree populators:");
+        treePopulator.getLoadedTrees().forEach(tree -> Logger.log("  &7- &f" + tree.getId()));
         Logger.success("Loaded &e" + growthManager.getLoadedGrowthConfigNames().size() + "&a growth configurations:");
         Logger.logList(growthManager.getLoadedGrowthConfigNames(), "  &7- &f");
         Logger.log("&r");

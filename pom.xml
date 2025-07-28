@@ -6,7 +6,7 @@
 
     <groupId>it.hydr4</groupId>
     <artifactId>OraxenNature</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <name>OraxenNature</name>
@@ -62,9 +62,19 @@
             <id>oraxen</id>
             <url>https://repo.oraxen.com/releases</url>
         </repository>
+        <repository>
+            <id>enginehub-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>com.sk89q.worldedit</groupId>
+            <artifactId>worldedit-bukkit</artifactId>
+            <version>7.2.12</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
