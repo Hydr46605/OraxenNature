@@ -164,7 +164,7 @@ public class CustomBlockPopulator {
                             if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                                 Logger.debug("Attempting to place Oraxen block with ID: " + oraxenId + " at location: " + blockLoc.toVector().toString());
                                 OraxenBlocks.place(oraxenId, blockLoc);
-                                Logger.debug("OraxenBlocks.place() called for ID: " + oraxenId + " at location: " + blockLoc.toVector().toString());
+                                Logger.info("Successfully placed Oraxen block '" + oraxenId + "' at " + blockLoc.toVector().toString());
                                 GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
                                 if (growable != null) {
                                     plugin.getGrowthManager().addTrackedBlock(block, growable);
@@ -190,7 +190,7 @@ public class CustomBlockPopulator {
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                         Logger.debug("Attempting to place Oraxen vein block with ID: " + oraxenId + " at location: " + currentLoc.toVector().toString());
                         OraxenBlocks.place(oraxenId, currentLoc);
-                        Logger.debug("OraxenBlocks.place() called for vein ID: " + oraxenId + " at location: " + currentLoc.toVector().toString());
+                        Logger.info("Successfully placed Oraxen vein block '" + oraxenId + "' at " + currentLoc.toVector().toString());
                         GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
                         if (growable != null) {
                             plugin.getGrowthManager().addTrackedBlock(currentBlock, growable);
