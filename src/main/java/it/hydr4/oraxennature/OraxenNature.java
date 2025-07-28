@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -69,6 +70,9 @@ public final class OraxenNature extends JavaPlugin {
         growthConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "growth_config.yml"));
         settingsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "settings.yml"));
 
+        // Load and merge pack configurations
+        loadPacks();
+
         // Set debug mode
         debugMode = settingsConfig.getBoolean("debug", false);
 
@@ -104,6 +108,53 @@ public final class OraxenNature extends JavaPlugin {
 
         // Start version checker
         checkVersion();
+    }
+
+    private void loadPacks() {
+        File packsFolder = new File(getDataFolder(), "packs");
+        if (!packsFolder.exists()) {
+            packsFolder.mkdirs();
+            return;
+        }
+
+        for (File file : packsFolder.listFiles()) {
+            if (file.isFile() && file.getName().endsWith(".yml")) {
+                Logger.info("Loading pack: " + file.getName());
+                FileConfiguration packConfig = YamlConfiguration.loadConfiguration(file);
+
+                // Merge 'blocks' section
+                if (packConfig.isConfigurationSection("blocks")) {
+                    ConfigurationSection blocksSection = packConfig.getConfigurationSection("blocks");
+                    for (String key : blocksSection.getKeys(false)) {
+                        blockPopulatorConfig.set("blocks." + key, blocksSection.get(key));
+                    }
+                }
+
+                // Merge 'trees' section
+                if (packConfig.isConfigurationSection("trees")) {
+                    ConfigurationSection treesSection = packConfig.getConfigurationSection("trees");
+                    for (String key : treesSection.getKeys(false)) {
+                        treePopulatorConfig.set("trees." + key, treesSection.get(key));
+                    }
+                }
+
+                // Merge 'growth_configs' section (assuming it's named this way)
+                if (packConfig.isConfigurationSection("growth_configs")) {
+                    ConfigurationSection growthConfigsSection = packConfig.getConfigurationSection("growth_configs");
+                    for (String key : growthConfigsSection.getKeys(false)) {
+                        growthConfig.set("growth_configs." + key, growthConfigsSection.get(key));
+                    }
+                }
+
+                // Merge 'settings' section (careful with this, might override core settings)
+                if (packConfig.isConfigurationSection("settings")) {
+                    ConfigurationSection settingsSection = packConfig.getConfigurationSection("settings");
+                    for (String key : settingsSection.getKeys(false)) {
+                        settingsConfig.set(key, settingsSection.get(key));
+                    }
+                }
+            }
+        }
     }
 
     private void checkVersion() {
@@ -186,6 +237,7 @@ public final class OraxenNature extends JavaPlugin {
 
     public void reloadBlockPopulatorConfig() {
         blockPopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "block_populator.yml"));
+        loadPacks(); // Reload packs as well
         blockPopulator = new CustomBlockPopulator(this, blockPopulatorConfig);
         Logger.info("Block populator configuration reloaded.");
     }
