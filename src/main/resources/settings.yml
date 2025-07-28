@@ -4,3 +4,7 @@
 # This will log every action the plugin takes, which can be helpful for troubleshooting,
 # but may impact performance.
 debug: false
+
+# GitHub Version Checker Settings
+# Set to true to enable the GitHub version checker.
+version_checker_enabled: true

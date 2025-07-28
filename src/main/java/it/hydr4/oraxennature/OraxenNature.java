@@ -11,8 +11,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public final class OraxenNature extends JavaPlugin {
 
@@ -92,6 +101,60 @@ public final class OraxenNature extends JavaPlugin {
         Logger.logList(growthManager.getLoadedGrowthConfigNames(), "  &7- &f");
         Logger.log("&r");
         Logger.log("&8&m------------------------------------------------");
+
+        // Start version checker
+        checkVersion();
+    }
+
+    private void checkVersion() {
+        boolean versionCheckerEnabled = settingsConfig.getBoolean("version_checker_enabled", true);
+        if (!versionCheckerEnabled) {
+            return;
+        }
+
+        String repoOwner = "Hydr46605";
+        String repoName = "OraxenNature";
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                try {
+                    String urlString = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/releases/latest";
+                    URL url = new URL(urlString);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setRequestProperty("User-Agent", "OraxenNature-VersionChecker");
+
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        String inputLine;
+                        StringBuilder content = new StringBuilder();
+                        while ((inputLine = in.readLine()) != null) {
+                            content.append(inputLine);
+                        }
+                        in.close();
+
+                        JSONParser parser = new JSONParser();
+                        JSONObject json = (JSONObject) parser.parse(content.toString());
+                        String latestVersion = (String) json.get("tag_name");
+
+                        String currentVersion = getDescription().getVersion();
+
+                        if (latestVersion != null && !latestVersion.equals(currentVersion)) {
+                            Logger.info("A new version of OraxenNature is available: " + latestVersion + " (Current: " + currentVersion + ")");
+                            Logger.info("Download it from: https://github.com/" + repoOwner + "/" + repoName + "/releases");
+                        } else {
+                            Logger.info("You are running the latest version of OraxenNature.");
+                        }
+                    } else {
+                        Logger.warning("Failed to check for updates. HTTP Response Code: " + responseCode);
+                    }
+                } catch (Exception e) {
+                    Logger.warning("An error occurred during version check: " + e.getMessage());
+                }
+            }
+        }.runTaskAsynchronously(this);
     }
 
     @Override
