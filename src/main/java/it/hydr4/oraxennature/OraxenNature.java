@@ -6,6 +6,7 @@ import it.hydr4.oraxennature.populators.CustomBlockPopulator;
 import it.hydr4.oraxennature.populators.treePopulator.CustomTreePopulator;
 import it.hydr4.oraxennature.gui.GuiManager;
 import it.hydr4.oraxennature.gui.ChatInputListener;
+import it.hydr4.oraxennature.utils.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -26,6 +27,7 @@ public final class OraxenNature extends JavaPlugin {
     private FileConfiguration blockPopulatorConfig;
     private FileConfiguration treePopulatorConfig;
     private FileConfiguration growthConfig;
+    private FileConfiguration settingsConfig;
 
     @Override
     public void onEnable() {
@@ -50,11 +52,16 @@ public final class OraxenNature extends JavaPlugin {
         saveDefaultConfig("block_populator.yml");
         saveDefaultConfig("tree_populator.yml");
         saveDefaultConfig("growth_config.yml");
+        saveDefaultConfig("settings.yml");
 
         // Load configurations
         blockPopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "block_populator.yml"));
         treePopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "tree_populator.yml"));
         growthConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "growth_config.yml"));
+        settingsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "settings.yml"));
+
+        // Set debug mode
+        debugMode = settingsConfig.getBoolean("debug", false);
 
         // Initialize populators and growth manager
         blockPopulator = new CustomBlockPopulator(this, blockPopulatorConfig);
@@ -75,10 +82,6 @@ public final class OraxenNature extends JavaPlugin {
         }
 
         getServer().getPluginManager().registerEvents(new it.hydr4.oraxennature.listeners.ChunkLoadListener(this), this);
-        // Register the custom tree populator for all worlds
-        for (World world : getServer().getWorlds()) {
-            world.getPopulators().add(treePopulator);
-        }
 
         Logger.log("&r");
         Logger.success("Loaded &e" + blockPopulator.getLoadedBlockNames().size() + "&a custom block populators:");
@@ -114,7 +117,8 @@ public final class OraxenNature extends JavaPlugin {
         reloadBlockPopulatorConfig();
         reloadTreePopulatorConfig();
         reloadGrowthConfig();
-        Logger.info("All OraxenNature configurations reloaded.");
+        settingsConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "settings.yml"));
+        debugMode = settingsConfig.getBoolean("debug", false);
     }
 
     public void reloadBlockPopulatorConfig() {
@@ -124,15 +128,8 @@ public final class OraxenNature extends JavaPlugin {
     }
 
     public void reloadTreePopulatorConfig() {
-        // Remove old populators and add new ones
-        for (World world : getServer().getWorlds()) {
-            world.getPopulators().remove(treePopulator);
-        }
         treePopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "tree_populator.yml"));
         treePopulator = new CustomTreePopulator(this, treePopulatorConfig);
-        for (World world : getServer().getWorlds()) {
-            world.getPopulators().add(treePopulator);
-        }
         Logger.info("Tree populator configuration reloaded.");
     }
 
@@ -183,5 +180,9 @@ public final class OraxenNature extends JavaPlugin {
 
     public GuiManager getGuiManager() {
         return guiManager;
+    }
+
+    public GrowthManager getGrowthManager() {
+        return growthManager;
     }
 }

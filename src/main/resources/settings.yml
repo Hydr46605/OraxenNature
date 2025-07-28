@@ -1,0 +1,6 @@
+
+# OraxenNature Settings
+# Set to true to enable detailed logging for debugging purposes.
+# This will log every action the plugin takes, which can be helpful for troubleshooting,
+# but may impact performance.
+debug: false

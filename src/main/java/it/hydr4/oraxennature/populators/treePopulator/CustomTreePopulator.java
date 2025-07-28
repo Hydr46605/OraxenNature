@@ -1,7 +1,9 @@
 package it.hydr4.oraxennature.populators.treePopulator;
 
 import it.hydr4.oraxennature.OraxenNature;
-import it.hydr4.oraxennature.Logger;
+import it.hydr4.oraxennature.utils.Logger;
+import it.hydr4.oraxennature.growth.GrowableBlock;
+import it.hydr4.oraxennature.growth.GrowthManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
@@ -69,7 +71,12 @@ public class CustomTreePopulator extends BlockPopulator {
                 int leafRadius = treeConfig.getInt("leaf_radius", 2);
                 double leafDensity = treeConfig.getDouble("leaf_density", 0.8);
                 String treeType = treeConfig.getString("tree_type", "BRANCHING");
-                boolean enabled = treeConfig.getBoolean("enabled", true); // Default to true if not specified
+                boolean enabled = treeConfig.getBoolean("enabled", true);
+
+                if (!enabled) {
+                    it.hydr4.oraxennature.utils.Logger.debug("Tree entry '" + key + "' is disabled in tree_populator.yml. Skipping loading.");
+                    continue;
+                }
 
                 if (logId != null && leafId != null) {
                     trees.add(new CustomTree(key, logId, leafId, minY, maxY, chance, worlds, biomes,
@@ -97,7 +104,7 @@ public class CustomTreePopulator extends BlockPopulator {
 
         for (CustomTree tree : customTrees) {
             if (!tree.isEnabled()) {
-                plugin.getLogger().info("Tree entry '" + tree.getId() + "' is disabled in tree_populator.yml. Skipping.");
+                it.hydr4.oraxennature.utils.Logger.debug("Tree entry '" + tree.getId() + "' is disabled in tree_populator.yml. Skipping population.");
                 continue;
             }
 
@@ -130,6 +137,10 @@ public class CustomTreePopulator extends BlockPopulator {
                 if (OraxenBlocks.getOraxenBlock(loc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
                         OraxenBlocks.place(tree.getLogOraxenId(), loc);
+                        GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(tree.getLogOraxenId());
+                        if (growable != null) {
+                            plugin.getGrowthManager().addTrackedBlock(loc.getBlock(), growable);
+                        }
                     } else {
                         plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for log placement at " + loc.toVector().toString() + ". Skipping.");
                     }
@@ -162,6 +173,10 @@ public class CustomTreePopulator extends BlockPopulator {
                 if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
                         OraxenBlocks.place(tree.getLogOraxenId(), currentLoc);
+                        GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(tree.getLogOraxenId());
+                        if (growable != null) {
+                            plugin.getGrowthManager().addTrackedBlock(block, growable);
+                        }
                     } else {
                         plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for branch log placement at " + currentLoc.toVector().toString() + ". Skipping.");
                     }

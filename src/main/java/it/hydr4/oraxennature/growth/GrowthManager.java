@@ -1,7 +1,7 @@
 package it.hydr4.oraxennature.growth;
 
 import it.hydr4.oraxennature.OraxenNature;
-import it.hydr4.oraxennature.Logger;
+import it.hydr4.oraxennature.utils.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,7 +17,7 @@ public class GrowthManager {
 
     private final OraxenNature plugin;
     private final Map<String, GrowableBlock> growableBlocks;
-    private BukkitTask growthTask;
+    private GrowthTask growthTask;
     private final List<String> loadedGrowthConfigNames = new ArrayList<>();
 
     public GrowthManager(OraxenNature plugin, FileConfiguration config) {
@@ -75,8 +75,8 @@ public class GrowthManager {
         if (growthTask != null) {
             growthTask.cancel();
         }
-        // Schedule the task to run every second (20 ticks)
-        growthTask = new GrowthTask(plugin, growableBlocks).runTaskTimer(plugin, 0L, 20L);
+        growthTask = new GrowthTask(plugin, growableBlocks);
+        growthTask.runTaskTimer(plugin, 0L, 20L);
         plugin.getLogger().info("Growth task started.");
     }
 
@@ -85,6 +85,12 @@ public class GrowthManager {
             growthTask.cancel();
             growthTask = null;
             plugin.getLogger().info("Growth task stopped.");
+        }
+    }
+
+    public void addTrackedBlock(org.bukkit.block.Block block, GrowableBlock growableBlock) {
+        if (growthTask != null) {
+            growthTask.addTrackedBlock(block, growableBlock);
         }
     }
 

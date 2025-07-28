@@ -9,57 +9,39 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.Arrays;
 
 public class GrowthTask extends BukkitRunnable {
 
     private final OraxenNature plugin;
     private final Map<String, GrowableBlock> growableBlocks;
-    private final Map<Location, Long> lastGrowthAttempt;
+    private final List<TrackedBlock> trackedBlocks = new ArrayList<>();
 
     public GrowthTask(OraxenNature plugin, Map<String, GrowableBlock> growableBlocks) {
         this.plugin = plugin;
         this.growableBlocks = growableBlocks;
-        this.lastGrowthAttempt = new HashMap<>();
+    }
+
+    public void addTrackedBlock(Block block, GrowableBlock growableBlock) {
+        trackedBlocks.add(new TrackedBlock(block.getLocation(), growableBlock));
     }
 
     @Override
     public void run() {
-        // Check if Oraxen is enabled and loaded
         if (plugin.getServer().getPluginManager().getPlugin("Oraxen") == null || !plugin.getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
             plugin.getLogger().warning("Oraxen is not enabled. Skipping growth task.");
             return;
         }
 
-        // Iterate over all loaded chunks in all worlds
-        Bukkit.getWorlds().forEach(world -> {
-            Arrays.asList(world.getLoadedChunks()).forEach(chunk -> { // Convert Chunk[] to List
-                for (int x = 0; x < 16; x++) {
-                    for (int z = 0; z < 16; z++) {
-                        for (int y = world.getMinHeight(); y < world.getMaxHeight(); y++) {
-                            Block block = chunk.getBlock(x, y, z);
-                            Mechanic oraxenMechanic = OraxenBlocks.getOraxenBlock(block.getLocation());
-                            String oraxenId = (oraxenMechanic != null) ? oraxenMechanic.getItemID() : null;
-
-                            if (oraxenId != null) {
-                                GrowableBlock growable = growableBlocks.get(oraxenId);
-                                if (growable != null) {
-                                    long currentTime = System.currentTimeMillis();
-                                    long lastAttempt = lastGrowthAttempt.getOrDefault(block.getLocation(), 0L);
-
-                                    if (currentTime - lastAttempt >= growable.getGrowthIntervalSeconds() * 1000L) {
-                                        lastGrowthAttempt.put(block.getLocation(), currentTime);
-                                        checkAndApplyGrowth(block, growable);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+        trackedBlocks.removeIf(trackedBlock -> {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - trackedBlock.getLastGrowthTime() >= trackedBlock.getGrowableBlock().getGrowthIntervalSeconds() * 1000L) {
+                trackedBlock.setLastGrowthTime(currentTime);
+                checkAndApplyGrowth(trackedBlock.getLocation().getBlock(), trackedBlock.getGrowableBlock());
+            }
+            return false; // Keep the block in the list
         });
     }
 
@@ -67,55 +49,33 @@ public class GrowthTask extends BukkitRunnable {
         Mechanic currentOraxenMechanic = OraxenBlocks.getOraxenBlock(block.getLocation());
         String currentOraxenId = (currentOraxenMechanic != null) ? currentOraxenMechanic.getItemID() : null;
 
-        if (currentOraxenId == null) return; // Should not happen if it was found in run()
+        if (currentOraxenId == null) return;
 
         int currentStageIndex = growable.getGrowthStages().indexOf(currentOraxenId);
 
-        // If it's the initial block or a known growth stage
         if (currentOraxenId.equals(growable.getInitialOraxenId()) || currentStageIndex != -1) {
-            // Check for growth
             if (growable.getGrowthConditions().check(block)) {
-                if (currentStageIndex < growable.getGrowthStages().size() - 1) { // Not yet at final stage
+                if (currentStageIndex < growable.getGrowthStages().size() - 1) {
                     String nextStageId = growable.getGrowthStages().get(currentStageIndex + 1);
-                    if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
-                        if (io.th0rgal.oraxen.api.OraxenItems.getItemById(nextStageId) != null) {
-                            OraxenBlocks.place(nextStageId, block.getLocation());
-                            plugin.getLogger().info("Growable block '" + growable.getId() + "' grew to stage '" + nextStageId + "' at " + block.getLocation().toVector().toString());
-                        } else {
-                            plugin.getLogger().warning("Invalid Oraxen ID '" + nextStageId + "' for growth placement at " + block.getLocation().toVector().toString() + ". Skipping.");
-                        }
-                    } else {
-                        plugin.getLogger().warning("Skipping growth placement at " + block.getLocation().toVector().toString() + " as it's already an Oraxen block.");
+                    if (OraxenItems.getItemById(nextStageId) != null) {
+                        OraxenBlocks.place(nextStageId, block.getLocation());
+                        plugin.getLogger().info("Growable block '" + growable.getId() + "' grew to stage '" + nextStageId + "' at " + block.getLocation().toVector().toString());
                     }
-                } else if (currentStageIndex == -1 && !growable.getGrowthStages().isEmpty()) { // Initial block, grow to first stage
+                } else if (currentStageIndex == -1 && !growable.getGrowthStages().isEmpty()) {
                     String firstStageId = growable.getGrowthStages().get(0);
-                    if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
-                        if (io.th0rgal.oraxen.api.OraxenItems.getItemById(firstStageId) != null) {
-                            OraxenBlocks.place(firstStageId, block.getLocation());
-                            plugin.getLogger().info("Growable block '" + growable.getId() + "' grew to initial stage '" + firstStageId + "' at " + block.getLocation().toVector().toString());
-                        } else {
-                            plugin.getLogger().warning("Invalid Oraxen ID '" + firstStageId + "' for initial growth placement at " + block.getLocation().toVector().toString() + ". Skipping.");
-                        }
-                    } else {
-                        plugin.getLogger().warning("Skipping initial growth placement at " + block.getLocation().toVector().toString() + " as it's already an Oraxen block.");
+                    if (OraxenItems.getItemById(firstStageId) != null) {
+                        OraxenBlocks.place(firstStageId, block.getLocation());
+                        plugin.getLogger().info("Growable block '" + growable.getId() + "' grew to initial stage '" + firstStageId + "' at " + block.getLocation().toVector().toString());
                     }
                 }
-            }
-            // Check for decay
-            else if (growable.getDecayConditions().check(block)) {
-                if (currentStageIndex > 0) { // Not yet at initial stage
+            } else if (growable.getDecayConditions().check(block)) {
+                if (currentStageIndex > 0) {
                     String previousStageId = growable.getGrowthStages().get(currentStageIndex - 1);
-                    if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
-                        if (io.th0rgal.oraxen.api.OraxenItems.getItemById(previousStageId) != null) {
-                            OraxenBlocks.place(previousStageId, block.getLocation());
-                            plugin.getLogger().info("Growable block '" + growable.getId() + "' decayed to stage '" + previousStageId + "' at " + block.getLocation().toVector().toString());
-                        } else {
-                            plugin.getLogger().warning("Invalid Oraxen ID '" + previousStageId + "' for decay placement at " + block.getLocation().toVector().toString() + ". Skipping.");
-                        }
-                    } else {
-                        plugin.getLogger().warning("Skipping decay placement at " + block.getLocation().toVector().toString() + " as it's already an Oraxen block.");
+                    if (OraxenItems.getItemById(previousStageId) != null) {
+                        OraxenBlocks.place(previousStageId, block.getLocation());
+                        plugin.getLogger().info("Growable block '" + growable.getId() + "' decayed to stage '" + previousStageId + "' at " + block.getLocation().toVector().toString());
                     }
-                } else if (currentStageIndex == 0 || currentOraxenId.equals(growable.getInitialOraxenId())) { // At first stage or initial, decay to air
+                } else if (currentStageIndex == 0 || currentOraxenId.equals(growable.getInitialOraxenId())) {
                     block.setType(org.bukkit.Material.AIR);
                     plugin.getLogger().info("Growable block '" + growable.getId() + "' decayed to air at " + block.getLocation().toVector().toString());
                 }

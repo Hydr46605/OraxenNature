@@ -1,5 +1,6 @@
-package it.hydr4.oraxennature;
+package it.hydr4.oraxennature.utils;
 
+import it.hydr4.oraxennature.OraxenNature;
 import org.bukkit.ChatColor;
 import java.util.List;
 
@@ -23,6 +24,12 @@ public class Logger {
 
     public static void error(String message) {
         log("&f[&cERROR&f] " + message);
+    }
+
+    public static void debug(String message) {
+        if (OraxenNature.getInstance().isDebugMode()) {
+            log("&f[&dDEBUG&f] " + message);
+        }
     }
 
     public static void logList(List<String> list, String prefix) {

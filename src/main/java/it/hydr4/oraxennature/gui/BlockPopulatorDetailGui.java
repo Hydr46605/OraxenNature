@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.Map;
 import java.io.IOException;
-import it.hydr4.oraxennature.Logger;
+import it.hydr4.oraxennature.utils.Logger;
 
 public class BlockPopulatorDetailGui extends AbstractGui {
 

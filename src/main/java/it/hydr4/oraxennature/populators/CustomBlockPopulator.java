@@ -9,7 +9,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import it.hydr4.oraxennature.OraxenNature;
-import it.hydr4.oraxennature.Logger;
+import it.hydr4.oraxennature.utils.Logger;
+import it.hydr4.oraxennature.growth.GrowableBlock;
+import it.hydr4.oraxennature.growth.GrowthManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.th0rgal.oraxen.api.OraxenBlocks;
 import io.th0rgal.oraxen.api.OraxenItems;
@@ -154,6 +156,10 @@ public class CustomBlockPopulator {
                         if (OraxenBlocks.getOraxenBlock(block.getLocation()) == null) { // Only place if not already an Oraxen block
                             if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                                 OraxenBlocks.place(oraxenId, blockLoc);
+                                GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
+                                if (growable != null) {
+                                    plugin.getGrowthManager().addTrackedBlock(block, growable);
+                                }
                             } else {
                                 Logger.warning("Invalid Oraxen ID '" + oraxenId + "' for block placement at " + blockLoc.toVector().toString() + ". Skipping.");
                             }
@@ -174,6 +180,10 @@ public class CustomBlockPopulator {
                 if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(oraxenId) != null) {
                         OraxenBlocks.place(oraxenId, currentLoc);
+                        GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(oraxenId);
+                        if (growable != null) {
+                            plugin.getGrowthManager().addTrackedBlock(currentBlock, growable);
+                        }
                     } else {
                         Logger.warning("Invalid Oraxen ID '" + oraxenId + "' for vein block placement at " + currentLoc.toVector().toString() + ". Skipping.");
                     }
