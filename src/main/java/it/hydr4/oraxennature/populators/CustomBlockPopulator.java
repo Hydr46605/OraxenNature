@@ -19,6 +19,7 @@ import io.th0rgal.oraxen.api.OraxenItems;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -106,6 +107,13 @@ public class CustomBlockPopulator {
                 boolean surface_airOnly = blockConfig.getBoolean("surface_air_only", false);
                 List<String> surface_worlds = blockConfig.getStringList("surface_worlds");
                 List<String> surface_biomes = blockConfig.getStringList("surface_biomes");
+                Map<String, Double> biomeChances = new java.util.HashMap<>();
+                ConfigurationSection biomeChancesSection = blockConfig.getConfigurationSection("biome_chances");
+                if (biomeChancesSection != null) {
+                    for (String biomeKey : biomeChancesSection.getKeys(false)) {
+                        biomeChances.put(biomeKey, biomeChancesSection.getDouble(biomeKey));
+                    }
+                }
 
                 // Check world for underground generation
                 if (!worlds.isEmpty() && !worlds.contains(chunk.getWorld().getName())) {
@@ -125,22 +133,27 @@ public class CustomBlockPopulator {
                 }
 
                 // Underground generation logic
-                generateBlocks(chunk, oraxenId, iterations, min_y, max_y, vein_size, chance, clusterChance, replaceableMaterials, placeOnMaterials, placeBelowMaterials, airOnly, biomes, chunkBiome);
+                generateBlocks(chunk, oraxenId, iterations, min_y, max_y, vein_size, chance, clusterChance, replaceableMaterials, placeOnMaterials, placeBelowMaterials, airOnly, biomes, chunkBiome, biomeChances);
 
                 // Surface generation logic (if configured)
                 if (surface_min_y != -1) {
-                    generateBlocks(chunk, oraxenId, surfaceIterations, surface_min_y, surface_max_y, surface_vein_size, surface_chance, surface_clusterChance, surface_replaceableMaterials, surface_placeOnMaterials, surface_placeBelowMaterials, surface_airOnly, surface_biomes, chunkBiome);
+                    generateBlocks(chunk, oraxenId, surfaceIterations, surface_min_y, surface_max_y, surface_vein_size, surface_chance, surface_clusterChance, surface_replaceableMaterials, surface_placeOnMaterials, surface_placeBelowMaterials, surface_airOnly, surface_biomes, chunkBiome, biomeChances);
                 }
             }
         }
     }
 
-    private void generateBlocks(Chunk chunk, String oraxenId, Optional<Integer> iterationsObj, int min_y, int max_y, Optional<Integer> veinSizeObj, double chance, double clusterChance, List<String> replaceableMaterials, List<String> placeOnMaterials, List<String> placeBelowMaterials, boolean airOnly, List<String> biomes, Biome chunkBiome) {
+    private void generateBlocks(Chunk chunk, String oraxenId, Optional<Integer> iterationsObj, int min_y, int max_y, Optional<Integer> veinSizeObj, double chance, double clusterChance, List<String> replaceableMaterials, List<String> placeOnMaterials, List<String> placeBelowMaterials, boolean airOnly, List<String> biomes, Biome chunkBiome, Map<String, Double> biomeChances) {
         if (!iterationsObj.isPresent()) return; // Skip if iterations is not configured for this generation type
         int attempts = iterationsObj.get();
 
+        double effectiveChance = chance;
+        if (biomeChances != null && biomeChances.containsKey(chunkBiome.name())) {
+            effectiveChance *= biomeChances.get(chunkBiome.name());
+        }
+
         for (int i = 0; i < attempts; i++) {
-            if (random.nextDouble() < chance) {
+            if (random.nextDouble() < effectiveChance) {
                 int x = random.nextInt(16);
                 int z = random.nextInt(16);
                 int y = random.nextInt(max_y - min_y + 1) + min_y;
