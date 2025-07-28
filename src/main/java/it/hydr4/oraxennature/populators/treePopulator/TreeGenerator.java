@@ -17,17 +17,15 @@ public class TreeGenerator {
 
     private final OraxenNature plugin;
     private final Random random;
-    private final SchematicPaster schematicPaster;
-
     public TreeGenerator(OraxenNature plugin) {
         this.plugin = plugin;
         this.random = new Random();
-        this.schematicPaster = new SchematicPaster(plugin);
     }
 
     public void generateTree(Location trunkBaseLoc, CustomTree tree) {
         if (tree.getSchematic() != null) {
             if (plugin.getServer().getPluginManager().isPluginEnabled("WorldEdit")) {
+                SchematicPaster schematicPaster = new SchematicPaster(plugin);
                 File schematicFile = new File(plugin.getDataFolder(), "schematics/" + tree.getSchematic());
                 if (schematicFile.exists()) {
                     schematicPaster.pasteSchematic(trunkBaseLoc, schematicFile);
