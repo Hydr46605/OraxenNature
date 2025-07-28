@@ -58,3 +58,6 @@ trees:
       - FOREST
     surface_materials:
       - GRASS_BLOCK
+    block_replacements:
+      STONE: "my_custom_stone_oraxen_id"
+      OAK_LOG: "my_custom_log_oraxen_id"

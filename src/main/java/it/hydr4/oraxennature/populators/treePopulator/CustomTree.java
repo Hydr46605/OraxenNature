@@ -3,6 +3,7 @@ package it.hydr4.oraxennature.populators.treePopulator;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
+import java.util.Map;
 
 public class CustomTree {
 
@@ -23,6 +24,7 @@ public class CustomTree {
     private final double canopyDensity;
 
     private final String schematic;
+    private final Map<String, String> blockReplacements;
 
     public CustomTree(String id, ConfigurationSection config) {
         this.id = id;
@@ -41,6 +43,14 @@ public class CustomTree {
         this.canopyMaxRadius = config.getInt("canopy.radius.max", 4);
         this.canopyDensity = config.getDouble("canopy.density", 0.6);
         this.schematic = config.getString("schematic");
+        Map<String, String> replacements = new java.util.HashMap<>();
+        ConfigurationSection replacementsSection = config.getConfigurationSection("block_replacements");
+        if (replacementsSection != null) {
+            for (String key : replacementsSection.getKeys(false)) {
+                replacements.put(key, replacementsSection.getString(key));
+            }
+        }
+        this.blockReplacements = replacements;
     }
 
     // Getters for all fields
@@ -99,5 +109,9 @@ public class CustomTree {
 
     public String getSchematic() {
         return schematic;
+    }
+
+    public Map<String, String> getBlockReplacements() {
+        return blockReplacements;
     }
 }

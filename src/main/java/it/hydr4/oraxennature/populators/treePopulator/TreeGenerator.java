@@ -28,7 +28,7 @@ public class TreeGenerator {
                 SchematicPaster schematicPaster = new SchematicPaster(plugin);
                 File schematicFile = new File(plugin.getDataFolder(), "schematics/" + tree.getSchematic());
                 if (schematicFile.exists()) {
-                    schematicPaster.pasteSchematic(trunkBaseLoc, schematicFile);
+                    schematicPaster.pasteSchematic(trunkBaseLoc, schematicFile, tree.getBlockReplacements());
                 } else {
                     Logger.error("Schematic file not found: " + schematicFile.getPath());
                 }
@@ -62,14 +62,14 @@ public class TreeGenerator {
         }
 
         // Generate canopy
-        Location canopyCenter = trunkBaseLoc.clone().add(0, height, 0);
+        Location canopyBase = trunkBaseLoc.clone().add(0, height - 2, 0); // Canopy starts a bit below the top of the trunk
         int canopyRadius = random.nextInt(tree.getCanopyMaxRadius() - tree.getCanopyMinRadius() + 1) + tree.getCanopyMinRadius();
-        generateCanopy(canopyCenter, canopyRadius, tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
+        generateIrregularCanopy(canopyBase, canopyRadius, tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
 
-        // Generate branches
-        int numBranches = height / 4;
+        // Generate branches (more varied)
+        int numBranches = random.nextInt(height / 3) + 2; // 2 to height/3 branches
         for (int i = 0; i < numBranches; i++) {
-            Location branchStart = canopyCenter.clone().subtract(0, random.nextInt(height / 2), 0);
+            Location branchStart = trunkBaseLoc.clone().add(0, random.nextInt(height - 2) + 2, 0); // Branches from mid-trunk to top
             generateBranch(branchStart, tree, blocksToPlace);
         }
     }
@@ -80,27 +80,28 @@ public class TreeGenerator {
             placeBlock(blocksToPlace, trunkBaseLoc.clone().add(0, i, 0), tree.getLogOraxenId());
         }
 
-        // Generate canopy layers
+        // Generate conical canopy layers
         for (int y = height; y >= height / 2; y--) {
-            int radius = (height - y) / 2 + 1;
+            int radius = (height - y) / 2 + 1; // Tapering radius
             generateCanopyLayer(trunkBaseLoc.clone().add(0, y, 0), radius, tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
         }
     }
 
     private void generateBranch(Location start, CustomTree tree, List<Map.Entry<Location, String>> blocksToPlace) {
         Location current = start.clone();
-        int length = random.nextInt(3) + 2;
+        int length = random.nextInt(tree.getCanopyMaxRadius()) + 1; // Branch length related to canopy size
         double yaw = random.nextDouble() * 2 * Math.PI;
-        double pitch = Math.toRadians(30);
+        double pitch = Math.toRadians(random.nextInt(40) + 20); // More varied upward angle
 
         for (int i = 0; i < length; i++) {
-            current.add(Math.cos(yaw), Math.sin(pitch), Math.sin(yaw));
+            current.add(Math.cos(yaw) * 0.8, Math.sin(pitch) * 0.8, Math.sin(yaw) * 0.8); // Slower growth
             placeBlock(blocksToPlace, current, tree.getLogOraxenId());
         }
-        generateCanopy(current, tree.getCanopyMinRadius(), tree.getCanopyDensity(), tree.getLeafOraxenId(), blocksToPlace);
+        // Place a small canopy at the end of the branch
+        generateIrregularCanopy(current, tree.getCanopyMinRadius(), tree.getCanopyDensity() * 0.7, tree.getLeafOraxenId(), blocksToPlace);
     }
 
-    private void generateCanopy(Location center, int radius, double density, String leafId, List<Map.Entry<Location, String>> blocksToPlace) {
+    private void generateIrregularCanopy(Location center, int radius, double density, String leafId, List<Map.Entry<Location, String>> blocksToPlace) {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
