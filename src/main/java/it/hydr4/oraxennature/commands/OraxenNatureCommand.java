@@ -122,7 +122,7 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
             plugin.reloadAllConfigs(); // Reload all configs to apply changes
         } catch (Exception e) {
             sender.sendMessage("§cFailed to save configuration: " + e.getMessage());
-            plugin.getLogger().severe("Failed to save configuration " + configFile + ".yml: " + e.getMessage());
+            it.hydr4.oraxennature.utils.Logger.error("Failed to save configuration " + configFile + ".yml: " + e.getMessage());
         }
     }
 
@@ -188,7 +188,7 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
         boolean enableDebug = Boolean.parseBoolean(args[1]);
         plugin.setDebugMode(enableDebug);
         sender.sendMessage("§aDebug mode set to: " + enableDebug);
-        plugin.getLogger().info("Debug mode set to: " + enableDebug + " by " + sender.getName());
+        it.hydr4.oraxennature.utils.Logger.info("Debug mode set to: " + enableDebug + " by " + sender.getName());
     }
 
     private void handleEditorCommand(CommandSender sender) {
@@ -206,6 +206,7 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§a/on set <config_file> <path> <value> §7- Sets a configuration value (e.g., /on set block_populator blocks.my_block.enabled true).");
         sender.sendMessage("§a/on get <config_file> <path> §7- Gets a configuration value (e.g., /on get block_populator blocks.my_block.enabled).");
         sender.sendMessage("§a/on debug <true|false> §7- Toggles debug mode for more verbose logging.");
+        sender.sendMessage("§a/on editor §7- Opens the OraxenNature GUI editor.");
         sender.sendMessage("§a/on help §7- Displays this help message.");
     }
 
@@ -225,6 +226,9 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
             }
             if ("debug".startsWith(args[0].toLowerCase())) {
                 completions.add("debug");
+            }
+            if ("editor".startsWith(args[0].toLowerCase())) {
+                completions.add("editor");
             }
             if ("help".startsWith(args[0].toLowerCase())) {
                 completions.add("help");

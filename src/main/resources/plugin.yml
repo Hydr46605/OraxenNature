@@ -2,7 +2,7 @@ name: OraxenNature
 version: 1.4.0
 main: it.hydr4.oraxennature.OraxenNature
 api-version: 1.21
-dependencies:
+depend:
   - Oraxen
 commands:
   oraxennature:

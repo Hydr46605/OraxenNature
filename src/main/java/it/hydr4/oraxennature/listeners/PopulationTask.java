@@ -17,6 +17,7 @@ public class PopulationTask extends BukkitRunnable {
     }
 
     public void queueChunk(Chunk chunk) {
+        it.hydr4.oraxennature.utils.Logger.debug("Queuing chunk for population: " + chunk.getX() + ", " + chunk.getZ());
         chunkQueue.add(chunk);
     }
 

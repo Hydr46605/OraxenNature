@@ -72,6 +72,7 @@ public class CustomTreePopulator extends BlockPopulator {
                 double leafDensity = treeConfig.getDouble("leaf_density", 0.8);
                 String treeType = treeConfig.getString("tree_type", "BRANCHING");
                 boolean enabled = treeConfig.getBoolean("enabled", true);
+                it.hydr4.oraxennature.utils.Logger.debug("Tree config for " + key + ": enabled=" + enabled + ", chance=" + chance + ", worlds=" + worlds + ", biomes=" + biomes);
 
                 if (!enabled) {
                     it.hydr4.oraxennature.utils.Logger.debug("Tree entry '" + key + "' is disabled in tree_populator.yml. Skipping loading.");
@@ -96,6 +97,7 @@ public class CustomTreePopulator extends BlockPopulator {
 
     @Override
     public void populate(@NotNull World world, @NotNull Random random, @NotNull Chunk chunk) {
+        it.hydr4.oraxennature.utils.Logger.debug("Attempting to populate trees in chunk at " + chunk.getX() + ", " + chunk.getZ() + " in world " + world.getName());
         // Check if Oraxen is enabled and loaded
         if (plugin.getServer().getPluginManager().getPlugin("Oraxen") == null || !plugin.getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
             plugin.getLogger().warning("Oraxen is not enabled. Skipping tree population in world " + world.getName() + ".");

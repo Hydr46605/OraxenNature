@@ -53,6 +53,7 @@ public class CustomBlockPopulator {
     }
 
     public void populate(Chunk chunk) {
+        Logger.debug("Attempting to populate chunk at " + chunk.getX() + ", " + chunk.getZ() + " in world " + chunk.getWorld().getName());
         // Check if Oraxen is enabled and loaded
         if (plugin.getServer().getPluginManager().getPlugin("Oraxen") == null || !plugin.getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
             Logger.warning("Oraxen is not enabled. Skipping block population in world " + chunk.getWorld().getName() + ".");
@@ -68,6 +69,7 @@ public class CustomBlockPopulator {
                 }
 
                 boolean enabled = blockConfig.getBoolean("enabled", true); // Default to true if not specified
+                Logger.debug("Processing block entry: " + key + ", Enabled: " + enabled);
                 if (!enabled) {
                     Logger.info("Block entry '" + key + "' is disabled in block_populator.yml. Skipping.");
                     continue;
@@ -81,6 +83,9 @@ public class CustomBlockPopulator {
                 Optional<Integer> vein_size = parseIterationValue(blockConfig, "vein_size", 5);
                 double chance = blockConfig.getDouble("chance");
                 double clusterChance = blockConfig.getDouble("cluster_chance", 0.0);
+
+                Logger.debug("  Oraxen ID: " + oraxenId + ", Iterations: " + iterations.orElse(-1) + ", Chance: " + chance + ", Vein Size: " + vein_size.orElse(-1));
+                Logger.debug("  Min Y: " + min_y + ", Max Y: " + max_y + ", Cluster Chance: " + clusterChance);
                 List<String> replaceableMaterials = blockConfig.getStringList("replaceable_materials");
                 List<String> placeOnMaterials = blockConfig.getStringList("place_on");
                 List<String> placeBelowMaterials = blockConfig.getStringList("place_below");
