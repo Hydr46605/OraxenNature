@@ -137,7 +137,7 @@ public final class OraxenNature extends JavaPlugin {
 
                         JSONParser parser = new JSONParser();
                         JSONObject json = (JSONObject) parser.parse(content.toString());
-                        String latestVersion = (String) json.get("tag_name");
+                        String latestVersion = ((String) json.get("tag_name")).replaceFirst("^v", "");
 
                         String currentVersion = getDescription().getVersion();
 
