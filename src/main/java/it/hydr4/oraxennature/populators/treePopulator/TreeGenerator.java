@@ -107,9 +107,11 @@ public class TreeGenerator {
                 for (int z = -radius; z <= radius; z++) {
                     double distance = Math.sqrt(x * x + y * y + z * z);
                     // Introduce more randomness in shape and density
-                    if (distance <= radius + random.nextDouble() * 1.0 && random.nextDouble() < density * (1.0 - (distance / (radius + 1.0)) * (distance / (radius + 1.0)))) { // Quadratic falloff
+                    // Use a Perlin-like noise or simpler random walk for clumping
+                    double noise = random.nextDouble(); // Simple noise for now
+                    if (distance <= radius + noise * 1.5 && random.nextDouble() < density * (1.0 - (distance / (radius + 1.0)) * (distance / (radius + 1.0)))) { // Quadratic falloff
                         // Add more vertical spread
-                        Location leafLoc = center.clone().add(x, y + (random.nextDouble() - 0.5) * 1.5, z); // Increased vertical variation
+                        Location leafLoc = center.clone().add(x, y + (random.nextDouble() - 0.5) * 2.0, z); // Increased vertical variation
                         // Prevent leaves from going too far below the center of the canopy
                         if (leafLoc.getY() >= center.getY() - radius * 0.75) { // Adjust this threshold as needed
                             placeBlock(blocksToPlace, leafLoc, leafId);
@@ -124,7 +126,8 @@ public class TreeGenerator {
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                 double distance = Math.sqrt(x * x + z * z);
-                if (distance <= radius + random.nextDouble() * 0.5 && random.nextDouble() < density * (1 - distance / (radius + 1))) {
+                double noise = random.nextDouble();
+                if (distance <= radius + noise * 1.0 && random.nextDouble() < density * (1 - distance / (radius + 1))) {
                     placeBlock(blocksToPlace, center.clone().add(x, 0, z), leafId);
                 }
             }
