@@ -233,6 +233,10 @@ public final class OraxenNature extends JavaPlugin {
         return growthConfig;
     }
 
+    public FileConfiguration getSettingsConfig() {
+        return settingsConfig;
+    }
+
     public CustomBlockPopulator getBlockPopulator() {
         return blockPopulator;
     }

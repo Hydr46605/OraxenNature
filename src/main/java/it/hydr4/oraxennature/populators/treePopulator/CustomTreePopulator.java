@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Map;
+import java.util.AbstractMap.SimpleEntry;
 
 public class CustomTreePopulator extends BlockPopulator {
 
@@ -163,6 +165,8 @@ public class CustomTreePopulator extends BlockPopulator {
     }
 
     private void generateAdvancedTree(Location trunkBaseLoc, CustomTree tree) {
+        List<Map.Entry<Location, String>> blocksToPlace = new ArrayList<>();
+
         // Generate trunk
         for (int i = 0; i < tree.getTrunkHeight(); i++) {
             Location loc = trunkBaseLoc.clone().add(0, i, 0);
@@ -171,12 +175,7 @@ public class CustomTreePopulator extends BlockPopulator {
                 Logger.debug("  Attempting to place log at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
                 if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
-                        Logger.debug("  Placing log with Oraxen ID: " + tree.getLogOraxenId() + " at " + loc.toVector().toString());
-                        OraxenBlocks.place(tree.getLogOraxenId(), loc);
-                        GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(tree.getLogOraxenId());
-                        if (growable != null) {
-                            plugin.getGrowthManager().addTrackedBlock(loc.getBlock(), growable);
-                        }
+                        blocksToPlace.add(new SimpleEntry<>(loc, tree.getLogOraxenId()));
                     } else {
                         plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for log placement at " + loc.toVector().toString() + ". Skipping.");
                     }
@@ -188,10 +187,13 @@ public class CustomTreePopulator extends BlockPopulator {
 
         // Start branching from the top of the trunk
         Location branchStartLoc = trunkBaseLoc.clone().add(0, tree.getTrunkHeight(), 0);
-        generateBranch(branchStartLoc, tree, 0, 0, 1.0); // Initial direction: upwards (pitch 0, yaw 0), scale 1.0
+        generateBranch(branchStartLoc, tree, 0, 0, 1.0, blocksToPlace); // Pass blocksToPlace list
+
+        // Schedule the asynchronous task to place all collected blocks
+        new TreeGenerationTask(plugin, blocksToPlace).runTaskTimer(plugin, 0L, 1L);
     }
 
-    private void generateBranch(Location currentLoc, CustomTree tree, double pitch, double yaw, double scale) {
+    private void generateBranch(Location currentLoc, CustomTree tree, double pitch, double yaw, double scale, List<Map.Entry<Location, String>> blocksToPlace) {
         if (scale < 0.1) return; // Stop branching if scale is too small
 
         int branchLength = random.nextInt(tree.getBranchLengthMax() - tree.getBranchLengthMin() + 1) + tree.getBranchLengthMin();
@@ -208,11 +210,7 @@ public class CustomTreePopulator extends BlockPopulator {
             if (block.getType() == Material.AIR || block.getType().isOccluding()) { // Place log if air or replaceable
                 if (OraxenBlocks.getOraxenBlock(currentLoc) == null) { // Only place if not already an Oraxen block
                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(tree.getLogOraxenId()) != null) {
-                        OraxenBlocks.place(tree.getLogOraxenId(), currentLoc);
-                        GrowableBlock growable = plugin.getGrowthManager().getGrowableBlocks().get(tree.getLogOraxenId());
-                        if (growable != null) {
-                            plugin.getGrowthManager().addTrackedBlock(block, growable);
-                        }
+                        blocksToPlace.add(new SimpleEntry<>(currentLoc, tree.getLogOraxenId()));
                     } else {
                         plugin.getLogger().warning("Invalid Oraxen ID '" + tree.getLogOraxenId() + "' for branch log placement at " + currentLoc.toVector().toString() + ". Skipping.");
                     }
@@ -222,7 +220,7 @@ public class CustomTreePopulator extends BlockPopulator {
             }
 
             // Place leaves around the branch segment
-            placeLeaves(currentLoc, tree.getLeafOraxenId(), tree.getLeafRadius(), tree.getLeafDensity());
+            placeLeaves(currentLoc, tree.getLeafOraxenId(), tree.getLeafRadius(), tree.getLeafDensity(), blocksToPlace);
         }
 
         // Branching out
@@ -230,12 +228,12 @@ public class CustomTreePopulator extends BlockPopulator {
             for (int i = 0; i < random.nextInt(tree.getMaxBranches()) + 1; i++) {
                 double newPitch = pitch + (random.nextDouble() * tree.getBranchAngleVariation() * 2) - tree.getBranchAngleVariation();
                 double newYaw = yaw + (random.nextDouble() * tree.getBranchAngleVariation() * 2) - tree.getBranchAngleVariation();
-                generateBranch(currentLoc.clone(), tree, newPitch, newYaw, scale * 0.8); // Reduce scale for sub-branches
+                generateBranch(currentLoc.clone(), tree, newPitch, newYaw, scale * 0.8, blocksToPlace); // Pass blocksToPlace list
             }
         }
     }
 
-    private void placeLeaves(Location centerLoc, String leafId, int radius, double density) {
+    private void placeLeaves(Location centerLoc, String leafId, int radius, double density, List<Map.Entry<Location, String>> blocksToPlace) {
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
@@ -247,8 +245,7 @@ public class CustomTreePopulator extends BlockPopulator {
                                 Logger.debug("  Attempting to place leaf at " + loc.toVector().toString() + ". Block Type: " + loc.getBlock().getType().name() + ", Raw Oraxen block object: " + oraxenBlockAtLoc);
                                 if (oraxenBlockAtLoc == null) { // Only place if not already an Oraxen block
                                     if (io.th0rgal.oraxen.api.OraxenItems.getItemById(leafId) != null) {
-                                        Logger.debug("  Placing leaf with Oraxen ID: " + leafId + " at " + loc.toVector().toString());
-                                        OraxenBlocks.place(leafId, loc);
+                                        blocksToPlace.add(new SimpleEntry<>(loc, leafId));
                                     } else {
                                         plugin.getLogger().warning("Invalid Oraxen ID '" + leafId + "' for leaf placement at " + loc.toVector().toString() + ". Skipping.");
                                     }
