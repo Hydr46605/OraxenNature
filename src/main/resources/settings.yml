@@ -12,3 +12,7 @@ version_checker_enabled: true
 # The number of tree blocks to place per server tick during asynchronous generation.
 # Lower values reduce server lag but increase generation time.
 tree_generation_batch_size: 50
+
+# Set to true to suppress INFO level logs from the plugin.
+# Debug logs will still be shown if 'debug' is true.
+suppress_info_logs: false

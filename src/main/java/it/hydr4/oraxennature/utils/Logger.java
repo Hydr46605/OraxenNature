@@ -11,11 +11,15 @@ public class Logger {
     }
 
     public static void info(String message) {
-        log("&f[&bINFO&f] " + message);
+        if (!OraxenNature.getInstance().getSettingsConfig().getBoolean("suppress_info_logs", false)) {
+            log("&f[&bINFO&f] " + message);
+        }
     }
 
     public static void success(String message) {
-        log("&f[&aSUCCESS&f] " + message);
+        if (!OraxenNature.getInstance().getSettingsConfig().getBoolean("suppress_info_logs", false)) {
+            log("&f[&aSUCCESS&f] " + message);
+        }
     }
 
     public static void warning(String message) {
