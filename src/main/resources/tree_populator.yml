@@ -1,11 +1,11 @@
 trees:
   example_advanced_tree:
-    enabled: false # Set to true to enable this tree populator
-    log_oraxen_id: "my_custom_log"
-    leaf_oraxen_id: "my_custom_leaves"
+    enabled: true # Set to true to enable this tree populator
+    log_oraxen_id: "oak_log" # Using vanilla Oraxen IDs for testing
+    leaf_oraxen_id: "oak_leaves" # Using vanilla Oraxen IDs for testing
     min_y: 60
     max_y: 100
-    chance: 0.01
+    chance: 0.5 # Increased chance for testing
     worlds:
       - world
     biomes:
@@ -20,3 +20,7 @@ trees:
     leaf_radius: 2 # Radius of the leaf canopy around branches
     leaf_density: 0.8 # Probability of placing a leaf block (0.0-1.0)
     tree_type: "BRANCHING" # Could be "SIMPLE", "BRANCHING", "L_SYSTEM" etc.
+    surface_materials: # Added surface materials
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
