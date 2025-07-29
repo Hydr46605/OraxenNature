@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.json.simple.JSONObject;
@@ -63,6 +64,9 @@ public final class OraxenNature extends JavaPlugin {
         saveDefaultConfig("tree_populator.yml");
         saveDefaultConfig("growth_config.yml");
         saveDefaultConfig("settings.yml");
+
+        // Copy default packs from JAR
+        copyDefaultPacks();
 
         // Load configurations
         blockPopulatorConfig = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "block_populator.yml"));
@@ -114,13 +118,22 @@ public final class OraxenNature extends JavaPlugin {
         File packsFolder = new File(getDataFolder(), "packs");
         if (!packsFolder.exists()) {
             packsFolder.mkdirs();
-            return;
         }
 
         for (File file : packsFolder.listFiles()) {
             if (file.isFile() && file.getName().endsWith(".yml")) {
-                Logger.info("Loading pack: " + file.getName());
                 FileConfiguration packConfig = YamlConfiguration.loadConfiguration(file);
+
+                // Check if pack is enabled
+                if (packConfig.isConfigurationSection("pack_info")) {
+                    ConfigurationSection packInfo = packConfig.getConfigurationSection("pack_info");
+                    if (!packInfo.getBoolean("enabled", true)) { // Default to true if not specified
+                        Logger.info("Pack '" + file.getName() + "' is disabled. Skipping.");
+                        continue;
+                    }
+                }
+
+                Logger.info("Loading pack: " + file.getName());
 
                 // Merge 'blocks' section
                 if (packConfig.isConfigurationSection("blocks")) {
@@ -154,6 +167,29 @@ public final class OraxenNature extends JavaPlugin {
                     }
                 }
             }
+        }
+    }
+
+    private void copyDefaultPacks() {
+        File packsFolder = new File(getDataFolder(), "packs");
+        if (!packsFolder.exists()) {
+            packsFolder.mkdirs();
+        }
+
+        // Get a list of all resource paths in the JAR under the "packs" folder
+        try (java.util.jar.JarFile jar = new java.util.jar.JarFile(getFile())) {
+            for (java.util.Enumeration<java.util.jar.JarEntry> entries = jar.entries(); entries.hasMoreElements();) {
+                java.util.jar.JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name.startsWith("packs/") && name.endsWith(".yml")) {
+                    File packFile = new File(getDataFolder(), name);
+                    if (!packFile.exists()) {
+                        saveResource(name, false);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Logger.error("Failed to copy default packs: " + e.getMessage());
         }
     }
 

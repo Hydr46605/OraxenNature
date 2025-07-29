@@ -1,0 +1,752 @@
+pack_info:
+  name: "Minerals Pack"
+  version: "1.0"
+  author: "Hydr4"
+  description: "Ore Generation config for the Minerals Pack of Crystal Creations (https://polymart.org/user/3924/itsme-to)."
+  enabled: false # Set to false to disable this pack by default
+
+blocks:
+  iridium:
+    enabled: true
+    oraxen_id: "iridium_ore"
+    iterations: 4
+    min_y: -56
+    max_y: -24
+    vein_size: 3-5
+    chance: 0.06
+    cluster_chance: 0.8
+    replaceable_materials:
+      - STONE
+      - ANDESITE
+      - DIORITE
+      - GRANITE
+      - TUFF
+      - GRAVEL
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - STONY_PEAKS
+      - WINDSWEPT_HILLS
+      - SAVANNA
+      - DESERT
+      - terralith:amethyst_caves
+      - terralith:thermal_caves
+      - terralith:volcanic_peaks
+      - terralith:red_caves
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0006
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - MOUNTAINS
+      - STONY_PEAKS
+      - WINDSWEPT_HILLS
+      - SAVANNA
+      - DESERT
+      - terralith:amethyst_caves
+      - terralith:thermal_caves
+      - terralith:volcanic_peaks
+      - terralith:red_caves
+    surface_air_only: false
+
+  deepslate_iridium:
+    enabled: true
+    oraxen_id: "deepslate_iridium_ore"
+    iterations: 4 # Increased iterations
+    min_y: -64
+    max_y: -40
+    vein_size: 2-3
+    chance: 0.035
+    cluster_chance: 0.9
+    replaceable_materials:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+      - DEEPSLATE_COAL_ORE
+      - DEEPSLATE_IRON_ORE
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - terralith:frozen_caves
+      - terralith:crystal_caves
+      - terralith:emerald_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_iridium_exposed:
+    enabled: true
+    oraxen_id: "deepslate_iridium_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: -40
+    vein_size: 1
+    chance: 0.005 # Very rare, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - terralith:frozen_caves
+      - terralith:crystal_caves
+      - terralith:emerald_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  mythril:
+    enabled: true
+    oraxen_id: "mythril_ore"
+    iterations: 2
+    min_y: 4
+    max_y: 20
+    vein_size: 2-3
+    chance: 0.018
+    cluster_chance: 0.85
+    replaceable_materials:
+      - STONE
+      - EMERALD_ORE
+      - DEEPSLATE
+      - TUFF
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - WINDSWEPT_HILLS
+      - terralith:alpine_highlands
+      - terralith:scarlet_mountains
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.00018
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - MOUNTAINS
+      - WINDSWEPT_HILLS
+      - terralith:alpine_highlands
+      - terralith:scarlet_mountains
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_mythril:
+    enabled: true
+    oraxen_id: "deepslate_mythril_ore"
+    iterations: 4 # Increased iterations
+    min_y: -64
+    max_y: -16
+    vein_size: 2-3
+    chance: 0.02
+    cluster_chance: 0.9
+    replaceable_materials:
+      - DEEPSLATE
+      - TUFF
+      - DEEPSLATE_EMERALD_ORE
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - terralith:emerald_caves
+      - terralith:amethyst_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_mythril_exposed:
+    enabled: true
+    oraxen_id: "deepslate_mythril_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: -16
+    vein_size: 1
+    chance: 0.003 # Very rare, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - terralith:emerald_caves
+      - terralith:amethyst_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  ruby:
+    enabled: true
+    oraxen_id: "ruby_ore"
+    iterations: 2
+    min_y: -24
+    max_y: 16
+    vein_size: 2-4
+    chance: 0.07
+    cluster_chance: 1.0
+    replaceable_materials:
+      - STONE
+      - REDSTONE_ORE
+      - GRANITE
+      - DIORITE
+    worlds:
+      - world
+    biomes:
+      - DESERT
+      - BADLANDS
+      - SAVANNA
+      - terralith:red_desert
+      - terralith:desert_canyon
+      - terralith:shattered_savanna
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0007
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - DESERT
+      - BADLANDS
+      - SAVANNA
+      - terralith:red_desert
+      - terralith:desert_canyon
+      - terralith:shattered_savanna
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_ruby:
+    enabled: true
+    oraxen_id: "deepslate_ruby_ore"
+    iterations: 4 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 3-5
+    chance: 0.08
+    cluster_chance: 1.0
+    replaceable_materials:
+      - DEEPSLATE
+      - DEEPSLATE_REDSTONE_ORE
+      - TUFF
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - BADLANDS
+      - terralith:red_caves
+      - terralith:thermal_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_ruby_exposed:
+    enabled: true
+    oraxen_id: "deepslate_ruby_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 1
+    chance: 0.008 # Rare, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - BADLANDS
+      - terralith:red_caves
+      - terralith:thermal_caves
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  amethyst:
+    enabled: true
+    oraxen_id: "amethyst_ore"
+    iterations: 1
+    min_y: -8
+    max_y: 40
+    vein_size: 2-4
+    chance: 0.05
+    cluster_chance: 1.0
+    replaceable_materials:
+      - STONE
+      - CALCITE
+      - EMERALD_ORE
+      - GRANITE
+      - TUFF
+    worlds:
+      - world
+    biomes:
+      - MOUNTAINS
+      - WINDSWEPT_HILLS
+      - terralith:amethyst_rainforest
+      - terralith:amethyst_canyon
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0005
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - MOUNTAINS
+      - WINDSWEPT_HILLS
+      - terralith:amethyst_rainforest
+      - terralith:amethyst_canyon
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_amethyst:
+    enabled: true
+    oraxen_id: "deepslate_amethyst_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 3-5
+    chance: 0.06
+    cluster_chance: 1.0
+    replaceable_materials:
+      - DEEPSLATE
+      - TUFF
+      - DEEPSLATE_EMERALD_ORE
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - terralith:amethyst_caves
+      - terralith:crystal_caves
+      - MOUNTAINS
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_amethyst_exposed:
+    enabled: true
+    oraxen_id: "deepslate_amethyst_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 1
+    chance: 0.006 # Rare, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - terralith:amethyst_caves
+      - terralith:crystal_caves
+      - MOUNTAINS
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  jade:
+    enabled: true
+    oraxen_id: "jade_ore"
+    iterations: 3
+    min_y: 24
+    max_y: 96
+    vein_size: 4-6
+    chance: 0.22
+    cluster_chance: 0.95
+    replaceable_materials:
+      - STONE
+      - COPPER_ORE
+      - ANDESITE
+      - GRANITE
+      - DIRT
+    worlds:
+      - world
+    biomes:
+      - FOREST
+      - BIRCH_FOREST
+      - DARK_FOREST
+      - terralith:lush_valley
+      - terralith:emerald_peaks
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0022
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - FOREST
+      - BIRCH_FOREST
+      - DARK_FOREST
+      - terralith:lush_valley
+      - terralith:emerald_peaks
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_jade:
+    enabled: true
+    oraxen_id: "deepslate_jade_ore"
+    iterations: 4 # Increased iterations
+    min_y: -16
+    max_y: 24
+    vein_size: 3-5
+    chance: 0.18
+    cluster_chance: 0.9
+    replaceable_materials:
+      - DEEPSLATE_COPPER_ORE
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - terralith:mossy_caves
+      - terralith:emerald_caves
+      - DARK_FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_jade_exposed:
+    enabled: true
+    oraxen_id: "deepslate_jade_ore"
+    iterations: 2 # Increased iterations
+    min_y: -16
+    max_y: 24
+    vein_size: 1
+    chance: 0.018 # Common, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - terralith:mossy_caves
+      - terralith:emerald_caves
+      - DARK_FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  silver:
+    enabled: true
+    oraxen_id: "silver_ore"
+    iterations: 2
+    min_y: -24
+    max_y: 64
+    vein_size: 3-5
+    chance: 0.11
+    cluster_chance: 1.0
+    replaceable_materials:
+      - STONE
+      - IRON_ORE
+      - ANDESITE
+      - GRANITE
+      - DIRT
+    worlds:
+      - world
+    biomes:
+      - PLAINS
+      - FOREST
+      - terralith:steppe
+      - terralith:glacial_chasm
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0011
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - PLAINS
+      - FOREST
+      - terralith:steppe
+      - terralith:glacial_chasm
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_silver:
+    enabled: true
+    oraxen_id: "deepslate_silver_ore"
+    iterations: 4 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 3-6
+    chance: 0.12
+    cluster_chance: 1.0
+    replaceable_materials:
+      - DEEPSLATE_IRON_ORE
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - terralith:frozen_caves
+      - terralith:ice_caves
+      - FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_silver_exposed:
+    enabled: true
+    oraxen_id: "deepslate_silver_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: 0
+    vein_size: 1
+    chance: 0.012 # Common, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - terralith:frozen_caves
+      - terralith:ice_caves
+      - FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  malachite:
+    enabled: true
+    oraxen_id: "malachite_ore"
+    iterations: 4
+    min_y: 8
+    max_y: 128
+    vein_size: 6-8
+    chance: 0.26
+    cluster_chance: 1.0
+    replaceable_materials:
+      - COAL_ORE
+      - STONE
+      - GRANITE
+      - DIORITE
+      - DIRT
+    worlds:
+      - world
+    biomes:
+      - PLAINS
+      - FOREST
+      - SAVANNA
+      - DESERT
+      - terralith:shrubland
+      - terralith:rocky_jungle
+    surface_iterations: 1
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.0026
+    surface_cluster_chance: 0.0
+    surface_replaceable_materials:
+      - GRASS_BLOCK
+      - DIRT
+      - STONE
+      - SAND
+    surface_worlds:
+      - world
+    surface_biomes:
+      - PLAINS
+      - FOREST
+      - SAVANNA
+      - DESERT
+      - terralith:shrubland
+      - terralith:rocky_jungle
+      - STONY_SHORES
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      STONY_SHORES: 0.8
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_malachite:
+    enabled: true
+    oraxen_id: "deepslate_malachite_ore"
+    iterations: 6 # Increased iterations
+    min_y: -64
+    max_y: -8
+    vein_size: 5-7
+    chance: 0.24
+    cluster_chance: 1.0
+    replaceable_materials:
+      - DEEPSLATE_COAL_ORE
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    worlds:
+      - world
+    biomes:
+      - terralith:fungal_caves
+      - terralith:mossy_caves
+      - FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
+
+  deepslate_malachite_exposed:
+    enabled: true
+    oraxen_id: "deepslate_malachite_ore"
+    iterations: 2 # Increased iterations
+    min_y: -64
+    max_y: -8
+    vein_size: 1
+    chance: 0.024 # Common, exposed
+    cluster_chance: 0.0
+    place_on:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    place_below:
+      - DEEPSLATE
+      - TUFF
+      - SCULK
+    air_only: true
+    worlds:
+      - world
+    biomes:
+      - terralith:fungal_caves
+      - terralith:mossy_caves
+      - FOREST
+      - DRIPSTONE_CAVES
+      - LUSH_CAVES
+    biome_chances:
+      DRIPSTONE_CAVES: 0.9
+      LUSH_CAVES: 0.9
