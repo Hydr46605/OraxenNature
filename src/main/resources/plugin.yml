@@ -1,5 +1,5 @@
 name: OraxenNature
-version: 1.6.0
+version: 1.7.0
 main: it.hydr4.oraxennature.OraxenNature
 api-version: 1.20
 depend:
