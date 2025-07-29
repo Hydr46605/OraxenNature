@@ -16,13 +16,14 @@ public class PackDetailGui extends AbstractGui {
     private final OraxenNature plugin;
 
     public PackDetailGui(OraxenNature plugin, String packName) {
-        super(plugin, 54, "§8Pack Details: " + packName);
+        super(54, "§8Pack Details: " + packName);
         this.plugin = plugin;
         this.packName = packName;
-        loadItems();
+        setupItems();
     }
 
-    private void loadItems() {
+    @Override
+    public void setupItems() {
         File packFile = new File(plugin.getDataFolder(), "packs/" + packName);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(packFile);
 
@@ -55,7 +56,7 @@ public class PackDetailGui extends AbstractGui {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            loadItems(); // Reload the GUI to reflect the change
+            setupItems(); // Reload the GUI to reflect the change
         }));
 
         // Back Button
