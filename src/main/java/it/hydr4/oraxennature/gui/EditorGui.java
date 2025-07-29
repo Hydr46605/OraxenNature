@@ -25,7 +25,7 @@ public class EditorGui extends AbstractGui {
             blockPopulatorMeta.setDisplayName("§aBlock Populator");
             blockPopulatorItem.setItemMeta(blockPopulatorMeta);
         }
-        setItem(10, new Button(blockPopulatorItem, event -> {
+        setItem(11, new Button(blockPopulatorItem, event -> {
             Player player = (Player) event.getWhoClicked();
             plugin.getGuiManager().openGui(player, new BlockPopulatorEditorGui(plugin));
         }));
@@ -49,7 +49,7 @@ public class EditorGui extends AbstractGui {
             growthConfigMeta.setDisplayName("§aGrowth Config");
             growthConfigItem.setItemMeta(growthConfigMeta);
         }
-        setItem(16, new Button(growthConfigItem, event -> {
+        setItem(15, new Button(growthConfigItem, event -> {
             Player player = (Player) event.getWhoClicked();
             plugin.getGuiManager().openGui(player, new GrowthConfigEditorGui(plugin));
         }));
@@ -61,7 +61,7 @@ public class EditorGui extends AbstractGui {
             packsEditorMeta.setDisplayName("§6Packs Editor");
             packsEditorItem.setItemMeta(packsEditorMeta);
         }
-        setItem(19, new Button(packsEditorItem, event -> {
+        setItem(17, new Button(packsEditorItem, event -> {
             Player player = (Player) event.getWhoClicked();
             plugin.getGuiManager().openGui(player, new PacksEditorGui(plugin));
         }));

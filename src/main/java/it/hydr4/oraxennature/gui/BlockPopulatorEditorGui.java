@@ -14,37 +14,69 @@ import java.util.Set;
 
 public class BlockPopulatorEditorGui extends PaginatedGui {
 
+    private final String packName;
+
     public BlockPopulatorEditorGui(OraxenNature plugin) {
-        super(plugin, 54, "§8Block Populator Editor", 45); // 45 items per page (5 rows)
+        this(plugin, null);
+    }
+
+    public BlockPopulatorEditorGui(OraxenNature plugin, String packName) {
+        super(plugin, 54, "§8Block Populator Editor" + (packName != null ? " for " + packName : ""), 45); // 45 items per page (5 rows)
+        this.packName = packName;
     }
 
     @Override
     protected void loadAllItems() {
         allItems.clear();
-        File blockPopulatorFile = new File(plugin.getDataFolder(), "block_populator.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(blockPopulatorFile);
+        allItems.clear();
+        YamlConfiguration config;
 
-        if (config.isConfigurationSection("blocks")) {
-            Set<String> blockKeys = config.getConfigurationSection("blocks").getKeys(false);
-            for (String key : blockKeys) {
-                // Get the oraxen_id from the block's configuration
-                String oraxenId = config.getString("blocks." + key + ".oraxen_id");
-                ItemStack item;
-                if (oraxenId != null && OraxenItems.getItemById(oraxenId) != null) {
-                    item = OraxenItems.getItemById(oraxenId).build();
-                } else {
-                    // Default to stone if no Oraxen ID or Oraxen item not found
-                    item = new ItemStack(Material.STONE);
+        if (packName != null) {
+            File packFile = new File(plugin.getDataFolder(), "packs/" + packName);
+            config = YamlConfiguration.loadConfiguration(packFile);
+            if (config.isConfigurationSection("block_populators")) {
+                Set<String> blockPopulatorKeys = config.getConfigurationSection("block_populators").getKeys(false);
+                for (String key : blockPopulatorKeys) {
+                    // Assuming block populators in packs refer to existing block_populator.yml entries
+                    // You might need to adjust this logic based on how your pack files reference populators
+                    ItemStack item = new ItemStack(Material.GRASS_BLOCK); // Placeholder
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null) {
+                        meta.setDisplayName("§b" + key);
+                        item.setItemMeta(meta);
+                    }
+                    allItems.add(new Button(item, event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        plugin.getGuiManager().openGui(player, new BlockPopulatorDetailGui(plugin, key));
+                    }));
                 }
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null) {
-                    meta.setDisplayName("§b" + key);
-                    item.setItemMeta(meta);
+            }
+        } else {
+            File blockPopulatorFile = new File(plugin.getDataFolder(), "block_populator.yml");
+            config = YamlConfiguration.loadConfiguration(blockPopulatorFile);
+
+            if (config.isConfigurationSection("blocks")) {
+                Set<String> blockKeys = config.getConfigurationSection("blocks").getKeys(false);
+                for (String key : blockKeys) {
+                    // Get the oraxen_id from the block's configuration
+                    String oraxenId = config.getString("blocks." + key + ".oraxen_id");
+                    ItemStack item;
+                    if (oraxenId != null && OraxenItems.getItemById(oraxenId) != null) {
+                        item = OraxenItems.getItemById(oraxenId).build();
+                    } else {
+                        // Default to stone if no Oraxen ID or Oraxen item not found
+                        item = new ItemStack(Material.STONE);
+                    }
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null) {
+                        meta.setDisplayName("§b" + key);
+                        item.setItemMeta(meta);
+                    }
+                    allItems.add(new Button(item, event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        plugin.getGuiManager().openGui(player, new BlockPopulatorDetailGui(plugin, key));
+                    }));
                 }
-                allItems.add(new Button(item, event -> {
-                    Player player = (Player) event.getWhoClicked();
-                    plugin.getGuiManager().openGui(player, new BlockPopulatorDetailGui(plugin, key));
-                }));
             }
         }
     }

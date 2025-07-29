@@ -12,30 +12,59 @@ import java.util.Set;
 
 public class GrowthConfigEditorGui extends PaginatedGui {
 
+    private final String packName;
+
     public GrowthConfigEditorGui(OraxenNature plugin) {
-        super(plugin, 54, "§8Growth Config Editor", 45); // 45 items per page (5 rows)
+        this(plugin, null);
+    }
+
+    public GrowthConfigEditorGui(OraxenNature plugin, String packName) {
+        super(plugin, 54, "§8Growth Config Editor" + (packName != null ? " for " + packName : ""), 45); // 45 items per page (5 rows)
+        this.packName = packName;
     }
 
     @Override
     protected void loadAllItems() {
         allItems.clear();
-        File growthConfigFile = new File(plugin.getDataFolder(), "growth_config.yml");
-        YamlConfiguration config = YamlConfiguration.loadConfiguration(growthConfigFile);
+        YamlConfiguration config;
 
-        if (config.isConfigurationSection("growth_configs")) {
-            Set<String> configKeys = config.getConfigurationSection("growth_configs").getKeys(false);
-            for (String key : configKeys) {
-                // TODO: Replace with an Oraxen block icon for better visual representation
-                ItemStack item = new ItemStack(Material.STONE);
-                ItemMeta meta = item.getItemMeta();
-                if (meta != null) {
-                    meta.setDisplayName("§b" + key);
-                    item.setItemMeta(meta);
+        if (packName != null) {
+            File packFile = new File(plugin.getDataFolder(), "packs/" + packName);
+            config = YamlConfiguration.loadConfiguration(packFile);
+            if (config.isConfigurationSection("growth_configs")) {
+                Set<String> growthConfigKeys = config.getConfigurationSection("growth_configs").getKeys(false);
+                for (String key : growthConfigKeys) {
+                    ItemStack item = new ItemStack(Material.BONE_MEAL); // Placeholder
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null) {
+                        meta.setDisplayName("§b" + key);
+                        item.setItemMeta(meta);
+                    }
+                    allItems.add(new Button(item, event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        plugin.getGuiManager().openGui(player, new GrowthConfigDetailGui(plugin, key));
+                    }));
                 }
-                allItems.add(new Button(item, event -> {
-                    Player player = (Player) event.getWhoClicked();
-                    plugin.getGuiManager().openGui(player, new GrowthConfigDetailGui(plugin, key));
-                }));
+            }
+        } else {
+            File growthConfigFile = new File(plugin.getDataFolder(), "growth_config.yml");
+            config = YamlConfiguration.loadConfiguration(growthConfigFile);
+
+            if (config.isConfigurationSection("growth_configs")) {
+                Set<String> configKeys = config.getConfigurationSection("growth_configs").getKeys(false);
+                for (String key : configKeys) {
+                    // TODO: Replace with an Oraxen block icon for better visual representation
+                    ItemStack item = new ItemStack(Material.STONE);
+                    ItemMeta meta = item.getItemMeta();
+                    if (meta != null) {
+                        meta.setDisplayName("§b" + key);
+                        item.setItemMeta(meta);
+                    }
+                    allItems.add(new Button(item, event -> {
+                        Player player = (Player) event.getWhoClicked();
+                        plugin.getGuiManager().openGui(player, new GrowthConfigDetailGui(plugin, key));
+                    }));
+                }
             }
         }
     }

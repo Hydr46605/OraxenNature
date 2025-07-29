@@ -59,6 +59,42 @@ public class PackDetailGui extends AbstractGui {
             setupItems(); // Reload the GUI to reflect the change
         }));
 
+        // Block Populator Button
+        ItemStack blockPopulatorItem = new ItemStack(Material.GRASS_BLOCK);
+        ItemMeta blockPopulatorMeta = blockPopulatorItem.getItemMeta();
+        if (blockPopulatorMeta != null) {
+            blockPopulatorMeta.setDisplayName("§aBlock Populators");
+            blockPopulatorItem.setItemMeta(blockPopulatorMeta);
+        }
+        setItem(20, new Button(blockPopulatorItem, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new BlockPopulatorEditorGui(plugin, packName));
+        }));
+
+        // Tree Populator Button
+        ItemStack treePopulatorItem = new ItemStack(Material.OAK_SAPLING);
+        ItemMeta treePopulatorMeta = treePopulatorItem.getItemMeta();
+        if (treePopulatorMeta != null) {
+            treePopulatorMeta.setDisplayName("§aTree Populators");
+            treePopulatorItem.setItemMeta(treePopulatorMeta);
+        }
+        setItem(24, new Button(treePopulatorItem, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new TreePopulatorEditorGui(plugin, packName));
+        }));
+
+        // Growth Config Button
+        ItemStack growthConfigItem = new ItemStack(Material.BONE_MEAL);
+        ItemMeta growthConfigMeta = growthConfigItem.getItemMeta();
+        if (growthConfigMeta != null) {
+            growthConfigMeta.setDisplayName("§aGrowth Configs");
+            growthConfigItem.setItemMeta(growthConfigMeta);
+        }
+        setItem(29, new Button(growthConfigItem, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new GrowthConfigEditorGui(plugin, packName));
+        }));
+
         // Back Button
         ItemStack backButton = new ItemStack(Material.ARROW);
         ItemMeta backMeta = backButton.getItemMeta();
