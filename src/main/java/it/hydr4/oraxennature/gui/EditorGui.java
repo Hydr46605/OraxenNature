@@ -53,5 +53,17 @@ public class EditorGui extends AbstractGui {
             Player player = (Player) event.getWhoClicked();
             plugin.getGuiManager().openGui(player, new GrowthConfigEditorGui(plugin));
         }));
+
+        // Packs Editor Button
+        ItemStack packsEditorItem = new ItemStack(Material.CHEST);
+        ItemMeta packsEditorMeta = packsEditorItem.getItemMeta();
+        if (packsEditorMeta != null) {
+            packsEditorMeta.setDisplayName("§6Packs Editor");
+            packsEditorItem.setItemMeta(packsEditorMeta);
+        }
+        setItem(19, new Button(packsEditorItem, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new PacksEditorGui(plugin));
+        }));
     }
 }

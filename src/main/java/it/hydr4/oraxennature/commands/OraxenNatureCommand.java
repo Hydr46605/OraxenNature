@@ -27,7 +27,7 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
-            sendHelpMessage(sender);
+            handleEditorCommand(sender);
             return true;
         }
 
@@ -50,9 +50,6 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
                 break;
             case "debug":
                 handleDebugCommand(sender, args);
-                break;
-            case "editor":
-                handleEditorCommand(sender);
                 break;
             case "help":
                 sendHelpMessage(sender);
@@ -206,7 +203,6 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage("§a/on set <config_file> <path> <value> §7- Sets a configuration value (e.g., /on set block_populator blocks.my_block.enabled true).");
         sender.sendMessage("§a/on get <config_file> <path> §7- Gets a configuration value (e.g., /on get block_populator blocks.my_block.enabled).");
         sender.sendMessage("§a/on debug <true|false> §7- Toggles debug mode for more verbose logging.");
-        sender.sendMessage("§a/on editor §7- Opens the OraxenNature GUI editor.");
         sender.sendMessage("§a/on help §7- Displays this help message.");
     }
 
@@ -226,9 +222,6 @@ public class OraxenNatureCommand implements CommandExecutor, TabCompleter {
             }
             if ("debug".startsWith(args[0].toLowerCase())) {
                 completions.add("debug");
-            }
-            if ("editor".startsWith(args[0].toLowerCase())) {
-                completions.add("editor");
             }
             if ("help".startsWith(args[0].toLowerCase())) {
                 completions.add("help");

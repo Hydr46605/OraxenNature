@@ -53,6 +53,18 @@ public class BlockPopulatorEditorGui extends PaginatedGui {
     protected void setupPaginationButtons() {
         super.setupPaginationButtons(); // Call super to retain existing pagination buttons
 
+        // Back Button
+        ItemStack backButton = new ItemStack(Material.ARROW);
+        ItemMeta backMeta = backButton.getItemMeta();
+        if (backMeta != null) {
+            backMeta.setDisplayName("§cBack");
+            backButton.setItemMeta(backMeta);
+        }
+        setItem(inventory.getSize() - 9, new Button(backButton, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new EditorGui(plugin));
+        }));
+
         // Create New Block Populator Button
         ItemStack createNewButton = new ItemStack(Material.ANVIL);
         ItemMeta createNewMeta = createNewButton.getItemMeta();
@@ -63,6 +75,18 @@ public class BlockPopulatorEditorGui extends PaginatedGui {
         setItem(inventory.getSize() - 7, new Button(createNewButton, event -> {
             Player player = (Player) event.getWhoClicked();
             plugin.getGuiManager().openGui(player, new BlockPopulatorDetailGui(plugin, "__NEW__"));
+        }));
+
+        // Packs Editor Button
+        ItemStack packsButton = new ItemStack(Material.CHEST);
+        ItemMeta packsMeta = packsButton.getItemMeta();
+        if (packsMeta != null) {
+            packsMeta.setDisplayName("§6Packs Editor");
+            packsButton.setItemMeta(packsMeta);
+        }
+        setItem(inventory.getSize() - 1, new Button(packsButton, event -> {
+            Player player = (Player) event.getWhoClicked();
+            plugin.getGuiManager().openGui(player, new PacksEditorGui(plugin));
         }));
     }
 }
