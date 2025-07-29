@@ -1,0 +1,41 @@
+name: Release to Modrinth
+
+on:
+  release:
+    types: [published] # This workflow runs when a new GitHub Release is published
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17' # Ensure this matches your project's Java version
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests # Build your plugin, skipping tests for faster release builds
+
+    - name: Get plugin version from pom.xml
+      id: get_version
+      run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+
+    - name: Upload to Modrinth
+      uses: Kir-Antipov/modrinth-publish@v1.2.0
+      with:
+        token: ${{ secrets.MODRINTH_TOKEN }} # Your Modrinth API token stored as a GitHub Secret
+        project_id: pVpXd1r3 # Your Modrinth project ID
+        version_number: ${{ steps.get_version.outputs.VERSION }}
+        version_name: "v${{ steps.get_version.outputs.VERSION }}"
+        changelog: ${{ github.event.release.body }}
+        upload_file: target/OraxenNature-${{ steps.get_version.outputs.VERSION }}.jar # Path to your compiled JAR
+        game_versions: "1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7"
+        loaders: "paper, spigot, bukkit"
+        status: "release"
+        featured: true
