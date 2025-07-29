@@ -1,0 +1,99 @@
+pack_info:
+  name: "Naturalist Pack"
+  version: "1.0"
+  author: "Hydr4"
+  description: "A generation pack by Hydr4 for Naturalist Oraxen Pack."
+  enabled: false
+
+trees:
+  burb_tree:
+    enabled: true
+    log_oraxen_id: "burb_log"
+    leaf_oraxen_id: "burb_leaves"
+    chance: 0.05
+    worlds:
+      - world
+    biomes:
+      - PLAINS
+      - FOREST
+      - TAIGA
+      - SAVANA
+      - DESERT
+    surface_materials:
+      - GRASS_BLOCK
+      - SAND
+      - STONE
+    shape: "OAK"
+    height:
+      min: 4
+      max: 6
+    canopy:
+      radius:
+        min: 2
+        max: 4
+      density: 0.8
+
+  sunroot_tree:
+    enabled: true
+    log_oraxen_id: "sunroot_log"
+    leaf_oraxen_id: "sunroot_leaves"
+    chance: 0.08
+    worlds:
+      - world
+    biomes:
+      - JUNGLE
+      - SAVANA
+    surface_materials:
+      - GRASS_BLOCK
+      - SAND
+    shape: "OAK"
+    height:
+      min: 5
+      max: 7
+    canopy:
+      radius:
+        min: 3
+        max: 5
+      density: 0.7
+
+  thurnwood_tree:
+    enabled: true
+    log_oraxen_id: "thurnwood_log"
+    leaf_oraxen_id: "thurnwood_leaves"
+    chance: 0.06
+    worlds:
+      - world
+    biomes:
+      - FOREST
+      - TAIGA
+    surface_materials:
+      - GRASS_BLOCK
+      - STONE
+    shape: "OAK"
+    height:
+      min: 5
+      max: 8
+    canopy:
+      radius:
+        min: 2
+        max: 4
+      density: 0.75
+
+blocks:
+  otello:
+    enabled: true
+    oraxen_id: "otello"
+    surface_iterations: 10
+    surface_min_y: 60
+    surface_max_y: 90
+    surface_vein_size: 1
+    surface_chance: 0.01
+    surface_cluster_chance: 0.0
+    surface_place_on:
+      - GRASS_BLOCK
+    surface_air_only: true
+    surface_worlds:
+      - world
+    surface_biomes:
+      - PLAINS
+      - FOREST
