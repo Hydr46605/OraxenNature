@@ -27,15 +27,26 @@ jobs:
       run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
     - name: Upload to Modrinth
-      uses: Kir-Antipov/modrinth-publish@v1.2.0
+      uses: Kir-Antipov/mc-publish@v3.3
       with:
-        token: ${{ secrets.MODRINTH_TOKEN }} # Your Modrinth API token stored as a GitHub Secret
-        project_id: pVpXd1r3 # Your Modrinth project ID
-        version_number: ${{ steps.get_version.outputs.VERSION }}
-        version_name: "v${{ steps.get_version.outputs.VERSION }}"
+        modrinth-id: pVpXd1r3
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        modrinth-featured: true
+        files: target/OraxenNature-${{ steps.get_version.outputs.VERSION }}.jar
+        name: OraxenNature ${{ steps.get_version.outputs.VERSION }}
+        version: ${{ steps.get_version.outputs.VERSION }}
+        version-type: release
         changelog: ${{ github.event.release.body }}
-        upload_file: target/OraxenNature-${{ steps.get_version.outputs.VERSION }}.jar # Path to your compiled JAR
-        game_versions: "1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7"
-        loaders: "paper, spigot, bukkit"
-        status: "release"
-        featured: true
+        loaders: |
+          paper
+          spigot
+          bukkit
+        game-versions: |
+          1.21
+          1.21.1
+          1.21.2
+          1.21.3
+          1.21.4
+          1.21.5
+          1.21.6
+          1.21.7
