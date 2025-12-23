@@ -1,6 +1,7 @@
-package it.hydr4.oraxennature.gui;
+package it.hydr4.oraxennature.gui.manager;
 
 import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.utils.TextUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -34,7 +35,7 @@ public class ChatInputListener implements Listener {
 
     public static void awaitInput(Player player, Consumer<String> callback, Consumer<Player> guiReopenAction) {
         awaitingInput.put(player.getUniqueId(), new InputContext(callback, guiReopenAction));
-        player.sendMessage("§ePlease enter the new value in chat. Type 'cancel' to abort.");
+        player.sendMessage(TextUtils.parse("<yellow>Please enter the new value in chat. Type <red>'cancel'</red> to abort."));
     }
 
     @EventHandler
@@ -48,7 +49,7 @@ public class ChatInputListener implements Listener {
             InputContext context = awaitingInput.get(playerUUID);
 
             if (message.equalsIgnoreCase("cancel")) {
-                player.sendMessage("§cInput cancelled.");
+                player.sendMessage(TextUtils.parse("<red>Input cancelled."));
                 awaitingInput.remove(playerUUID);
                 // Re-open the GUI if needed
                 plugin.getServer().getScheduler().runTask(plugin, () -> {

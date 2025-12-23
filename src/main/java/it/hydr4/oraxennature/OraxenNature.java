@@ -3,10 +3,11 @@ package it.hydr4.oraxennature;
 import it.hydr4.oraxennature.commands.OraxenNatureCommand;
 import it.hydr4.oraxennature.growth.GrowthManager;
 import it.hydr4.oraxennature.populators.CustomBlockPopulator;
-import it.hydr4.oraxennature.populators.treePopulator.CustomTreePopulator;
-import it.hydr4.oraxennature.gui.GuiManager;
-import it.hydr4.oraxennature.gui.ChatInputListener;
+import it.hydr4.oraxennature.populators.CustomTreePopulator;
+import it.hydr4.oraxennature.gui.manager.GuiManager;
+import it.hydr4.oraxennature.gui.manager.ChatInputListener;
 import it.hydr4.oraxennature.utils.Logger;
+import it.hydr4.oraxennature.utils.TextUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -44,13 +45,13 @@ public final class OraxenNature extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        Logger.log("&8&m------------------------------------------------");
-        Logger.log("&r");
-        Logger.log("  &a&lOraxenNature &a- &fEnabled");
-        Logger.log("  &r");
-        Logger.log("  &fDeveloped by: &bHydr4");
-        Logger.log("  &fVersion: &e" + getDescription().getVersion());
-        Logger.log("&r");
+        Logger.log("<dark_gray><strikethrough>------------------------------------------------</strikethrough>");
+        Logger.log("");
+        Logger.log("  <green><bold>OraxenNature <green>- <white>Enabled");
+        Logger.log("");
+        Logger.log("  <white>Developed by: <aqua>Hydr4");
+        Logger.log("  <white>Version: <yellow>" + getDescription().getVersion());
+        Logger.log("");
 
         // Check if Oraxen is enabled
         if (getServer().getPluginManager().getPlugin("Oraxen") == null || !getServer().getPluginManager().getPlugin("Oraxen").isEnabled()) {
@@ -100,15 +101,15 @@ public final class OraxenNature extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new it.hydr4.oraxennature.listeners.ChunkLoadListener(this), this);
 
-        Logger.log("&r");
-        Logger.success("Loaded &e" + blockPopulator.getLoadedBlockNames().size() + "&a custom block populators:");
-        Logger.logList(blockPopulator.getLoadedBlockNames(), "  &7- &f");
-        Logger.success("Loaded &e" + treePopulator.getLoadedTrees().size() + "&a custom tree populators:");
-        treePopulator.getLoadedTrees().forEach(tree -> Logger.log("  &7- &f" + tree.getId()));
-        Logger.success("Loaded &e" + growthManager.getLoadedGrowthConfigNames().size() + "&a growth configurations:");
-        Logger.logList(growthManager.getLoadedGrowthConfigNames(), "  &7- &f");
-        Logger.log("&r");
-        Logger.log("&8&m------------------------------------------------");
+        Logger.log("");
+        Logger.success("Loaded <yellow>" + blockPopulator.getLoadedBlockNames().size() + "<green> custom block populators:");
+        Logger.logList(blockPopulator.getLoadedBlockNames(), "  <gray>- <white>");
+        Logger.success("Loaded <yellow>" + treePopulator.getLoadedTrees().size() + "<green> custom tree populators:");
+        treePopulator.getLoadedTrees().forEach(tree -> Logger.log("  <gray>- <white>" + tree.getId()));
+        Logger.success("Loaded <yellow>" + growthManager.getLoadedGrowthConfigNames().size() + "<green> growth configurations:");
+        Logger.logList(growthManager.getLoadedGrowthConfigNames(), "  <gray>- <white>");
+        Logger.log("");
+        Logger.log("<dark_gray><strikethrough>------------------------------------------------</strikethrough>");
 
         // Start version checker
         checkVersion();
@@ -246,14 +247,14 @@ public final class OraxenNature extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Logger.log("&8&m------------------------------------------------");
-        Logger.log("&r");
-        Logger.log("  &c&lOraxenNature &c- &fDisabled");
-        Logger.log("  &r");
-        Logger.log("  &fDeveloped by: &bHydr4");
-        Logger.log("  &fVersion: &e" + getDescription().getVersion());
-        Logger.log("&r");
-        Logger.log("&8&m------------------------------------------------");
+        Logger.log("<dark_gray><strikethrough>------------------------------------------------</strikethrough>");
+        Logger.log("");
+        Logger.log("  <red><bold>OraxenNature <red>- <white>Disabled");
+        Logger.log("");
+        Logger.log("  <white>Developed by: <aqua>Hydr4");
+        Logger.log("  <white>Version: <yellow>" + getDescription().getVersion());
+        Logger.log("");
+        Logger.log("<dark_gray><strikethrough>------------------------------------------------</strikethrough>");
         if (growthManager != null) {
             growthManager.stopGrowthTask();
         }

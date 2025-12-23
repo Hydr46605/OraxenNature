@@ -1,38 +1,38 @@
 package it.hydr4.oraxennature.utils;
 
 import it.hydr4.oraxennature.OraxenNature;
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import java.util.List;
 
 public class Logger {
 
     public static void log(String message) {
-        OraxenNature.getInstance().getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+        Bukkit.getConsoleSender().sendMessage(TextUtils.parse(message));
     }
 
     public static void info(String message) {
         if (!OraxenNature.getInstance().getSettingsConfig().getBoolean("suppress_info_logs", false)) {
-            log("&f[&bINFO&f] " + message);
+            log("<white>[<blue>INFO<white>] " + message);
         }
     }
 
     public static void success(String message) {
         if (!OraxenNature.getInstance().getSettingsConfig().getBoolean("suppress_info_logs", false)) {
-            log("&f[&aSUCCESS&f] " + message);
+            log("<white>[<green>SUCCESS<white>] " + message);
         }
     }
 
     public static void warning(String message) {
-        log("&f[&eWARN&f] " + message);
+        log("<white>[<yellow>WARN<white>] " + message);
     }
 
     public static void error(String message) {
-        log("&f[&cERROR&f] " + message);
+        log("<white>[<red>ERROR<white>] " + message);
     }
 
     public static void debug(String message) {
         if (OraxenNature.getInstance().isDebugMode()) {
-            log("&f[&dDEBUG&f] " + message);
+            log("<white>[<light_purple>DEBUG<white>] " + message);
         }
     }
 

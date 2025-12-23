@@ -1,6 +1,7 @@
-package it.hydr4.oraxennature.gui;
+package it.hydr4.oraxennature.gui.manager;
 
 import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.gui.base.Gui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,9 +24,9 @@ public class GuiManager implements Listener {
     }
 
     public void openGui(Player player, Gui gui) {
-        gui.open(player);
-        gui.setupItems(); // Explicitly call setupItems after opening the GUI
         openGuis.put(player.getUniqueId(), gui);
+        gui.setupItems();
+        gui.open(player);
     }
 
     public void closeGui(Player player) {
@@ -36,9 +37,8 @@ public class GuiManager implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        Player player = (Player) event.getWhoClicked();
         if (openGuis.containsKey(player.getUniqueId())) {
             openGuis.get(player.getUniqueId()).onInventoryClick(event);
         }
@@ -46,9 +46,8 @@ public class GuiManager implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player)) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
 
-        Player player = (Player) event.getPlayer();
         if (openGuis.containsKey(player.getUniqueId())) {
             openGuis.get(player.getUniqueId()).onInventoryClose(event);
             openGuis.remove(player.getUniqueId());

@@ -1,4 +1,4 @@
-package it.hydr4.oraxennature.populators.treePopulator;
+package it.hydr4.oraxennature.trees;
 
 import org.bukkit.configuration.ConfigurationSection;
 

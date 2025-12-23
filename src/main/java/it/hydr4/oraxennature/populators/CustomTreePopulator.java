@@ -1,6 +1,8 @@
-package it.hydr4.oraxennature.populators.treePopulator;
+package it.hydr4.oraxennature.populators;
 
 import it.hydr4.oraxennature.OraxenNature;
+import it.hydr4.oraxennature.trees.CustomTree;
+import it.hydr4.oraxennature.trees.TreeGenerator;
 import it.hydr4.oraxennature.utils.Logger;
 import org.bukkit.Chunk;
 import org.bukkit.Location;

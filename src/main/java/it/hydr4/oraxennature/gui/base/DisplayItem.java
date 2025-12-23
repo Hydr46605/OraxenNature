@@ -1,4 +1,4 @@
-package it.hydr4.oraxennature.gui;
+package it.hydr4.oraxennature.gui.base;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -18,6 +18,6 @@ public class DisplayItem implements GuiItem {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-        event.setCancelled(true); // Prevent interaction with display items
+        // Do nothing for display items
     }
 }

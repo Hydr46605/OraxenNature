@@ -1,5 +1,6 @@
-package it.hydr4.oraxennature.gui;
+package it.hydr4.oraxennature.gui.base;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -13,16 +14,16 @@ import java.util.Map;
 public abstract class AbstractGui implements Gui {
 
     protected final Inventory inventory;
-    protected final Map<Integer, GuiItem> guiItems;
+    protected final Map<Integer, GuiItem> items;
 
-    public AbstractGui(int size, String title) {
+    public AbstractGui(int size, Component title) {
         this.inventory = Bukkit.createInventory(null, size, title);
-        this.guiItems = new HashMap<>();
+        this.items = new HashMap<>();
     }
 
-    protected void setItem(int slot, GuiItem guiItem) {
-        inventory.setItem(slot, guiItem.getItemStack());
-        guiItems.put(slot, guiItem);
+    protected void setItem(int slot, GuiItem item) {
+        items.put(slot, item);
+        inventory.setItem(slot, item.getItemStack());
     }
 
     @Override
@@ -32,16 +33,16 @@ public abstract class AbstractGui implements Gui {
 
     @Override
     public void onInventoryClick(InventoryClickEvent event) {
-        event.setCancelled(true); // By default, cancel all clicks in our GUIs
-        GuiItem clickedItem = guiItems.get(event.getRawSlot());
-        if (clickedItem != null) {
-            clickedItem.onClick(event);
+        event.setCancelled(true);
+        GuiItem item = items.get(event.getRawSlot());
+        if (item != null) {
+            item.onClick(event);
         }
     }
 
     @Override
     public void onInventoryClose(InventoryCloseEvent event) {
-        // Default implementation: do nothing
+        // Default implementation
     }
 
     @Override
@@ -53,6 +54,4 @@ public abstract class AbstractGui implements Gui {
     public void close(Player player) {
         player.closeInventory();
     }
-
-    public abstract void setupItems();
 }
