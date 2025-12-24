@@ -35,6 +35,7 @@ public final class OraxenNature extends JavaPlugin {
     private GuiManager guiManager;
     private ChatInputListener chatInputListener;
     private boolean debugMode = false;
+    private boolean worldEditEnabled = false;
 
     private FileConfiguration blockPopulatorConfig;
     private FileConfiguration treePopulatorConfig;
@@ -58,6 +59,14 @@ public final class OraxenNature extends JavaPlugin {
             Logger.error("Oraxen is not enabled! OraxenNature requires Oraxen to function. Disabling plugin.");
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }
+
+        // Check if WorldEdit is enabled
+        worldEditEnabled = getServer().getPluginManager().getPlugin("WorldEdit") != null && getServer().getPluginManager().getPlugin("WorldEdit").isEnabled();
+        if (worldEditEnabled) {
+            Logger.info("WorldEdit detected! Schematic features will be available.");
+        } else {
+            Logger.info("WorldEdit not found. Schematic features will be disabled.");
         }
 
         // Save default resources if they don't exist
@@ -301,6 +310,10 @@ public final class OraxenNature extends JavaPlugin {
 
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
+    }
+
+    public boolean isWorldEditEnabled() {
+        return worldEditEnabled;
     }
 
     private void saveDefaultConfig(String resourcePath) {

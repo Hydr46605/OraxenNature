@@ -4,6 +4,8 @@ main: it.hydr4.oraxennature.OraxenNature
 api-version: '1.21'
 depend:
   - Oraxen
+softdepend:
+  - WorldEdit
 commands:
   oraxennature:
     description: OraxenNature commands

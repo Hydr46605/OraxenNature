@@ -20,7 +20,9 @@ public class TreeGenerator {
         this.registeredFeatures = new HashMap<>();
         // Register default features
         registerFeature("vanilla", new VanillaTreeFeature());
-        registerFeature("schematic", new SchematicTreeFeature(plugin));
+        if (plugin.isWorldEditEnabled()) {
+            registerFeature("schematic", new SchematicTreeFeature(plugin));
+        }
     }
 
     public void registerFeature(String id, TreeFeature feature) {
